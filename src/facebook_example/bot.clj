@@ -6,7 +6,7 @@
             [facebook-example.facebook :as fb]))
 
 (defn on-message [payload]
-  (println "on-message")
+  (println "on-message payload:")
   (println payload)
   (let [sender-id (get-in payload [:sender :id])
         recipient-id (get-in payload [:recipient :id])
@@ -21,7 +21,7 @@
       :else (fb/send-message sender-id (fb/text-message message-text)))))
 
 (defn on-postback [payload]
-  (println "on-postback")
+  (println "on-postback payload:")
   (println payload))
 
 (defn on-attachment [payload])
