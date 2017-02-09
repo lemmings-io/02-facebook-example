@@ -1,51 +1,64 @@
 (ns facebook-example.facebook
   (:gen-class)
   (:require [clojure.string :as s]
-            [facebook-example.messages :as msg]))
+            [org.httpkit.client :as http]
+            [clojure.data.json :as json]
+            [environ.core :refer [env]]))
 
-(defn webhook-is-valid? [request]
+(def PAGE_ACCESS_TOKEN (env :page-access-token))
+(def APP_SECRET (env :app-secret))
+(def VERIFY_TOKEN (env :verify-token))
+
+(defn validate-webhook [request]
   (let [params (:params request)]
     (println "Incoming Webhook Request:")
     (println request)
-    (if (= true (= (params "hub.mode") "subscribe")
-          (= (params "hub.verify_token") (System/getenv "FB_PAGE_ACCESS_TOKEN")))
-      {:status 200 :body (params "hub.challenge")}
-      {:status 403})))
+    (if (and (= (params "hub.mode") "subscribe")
+             (= (params "hub.verify_token") VERIFY_TOKEN))
+        {:status 200 :body (params "hub.challenge")}
+        {:status 403})))
 
-(defn processText [senderID text]
-  (cond
-    (s/includes? (s/lower-case text) "help") (msg/sendTextMessage [senderID "Hi there, happy to help :)"])
-    (s/includes? (s/lower-case text) "image") (msg/sendImageMessage [senderID "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/M101_hires_STScI-PRC2006-10a.jpg/1280px-M101_hires_STScI-PRC2006-10a.jpg"])
-    (s/includes? (s/lower-case text) "quick reply") (msg/sendQuickReply [senderID])
-    ; If no rules apply echo the user's text input
-    :else (msg/sendTextMessage [senderID text])))
-
-; Process Received Message Event by Facebook
-(defn receivedMessage [event]
-  (println "Messaging Event:")
-  (println event)
-  (let [senderID (get-in event [:sender :id]) recipientID (get-in event [:recipient :id]) timeOfMessage (get-in event [:timestamp]) message (get-in event [:message])]
-    (println (str "Received message for user " senderID " and page " recipientID " at " timeOfMessage " with message:"))
-    (println message)
-    ; TODO: Check for text (onText ?), attachments (onAttachments ?)
-    ; or quick_reply (onQuickReply) in :message tree here
-    ; TODO: Simplify function to send a message vs.
-    ; (msg/sendTextMessage (receivedMessage messagingEvent))
-    (let [messageText (message :text)]
-      (cond
-        ; Check for :text
-        (contains? message :text) (processText senderID messageText)
-        ; Check for :attachments
-        (contains? message :attachments) (msg/sendTextMessage [senderID "Message with attachment received"])))))
-
-(defn route-request [request]
+(defn handle-message [request on-message on-postback on-attachments]
+  ; TODO: IMPLEMENT APP_SECRET VALIDATION
+  (println "Incoming Request:")
+  (println request)
   (let [data (get-in request [:params])]
-    (println "Incoming Request:")
-    (println request)
     (when (= (:object data) "page")
-      (doseq [pageEntry (:entry data)]
-        (doseq [messagingEvent (:messaging pageEntry)]
+      (doseq [page-entry (:entry data)]
+        (doseq [messaging-event (:messaging page-entry)]
           ; Check for message (onMessage) or postback (onPostback) here
-          (cond (contains? messagingEvent :message) (receivedMessage messagingEvent)
-                (contains? messagingEvent :postback) (msg/sendTextMessage (receivedMessage messagingEvent))
-                :else (println (str "Webhook received unknown messagingEvent: " messagingEvent))))))))
+          (cond (contains? messaging-event :postback)   (on-postback messaging-event)
+                (contains? messaging-event :message)    (cond (contains? (:message messaging-event) :attachments) (on-attachments messaging-event)
+                                                              :else (on-message messaging-event))
+                ;(contains? messaging-event :attachment) (on-attachments messaging-event)
+                :else (println (str "Webhook received unknown messaging-event: " messaging-event))))))))
+
+(defn send-api [message-data]
+  (println "Sending message-data:")
+  (println message-data)
+  (try
+      (let [response (http/post "https://graph.facebook.com/v2.6/me/messages"
+                      {:query-params {"access_token" PAGE_ACCESS_TOKEN}
+                       :headers {"Content-Type" "application/json"}
+                       :body (json/write-str message-data)
+                       :insecure? true})]
+        (if (= (:status @response) 200)
+            (println "Successfully sent message to FB")
+            (do
+              (println "Error sending message to FB:")
+              (println @response))))
+
+      (catch Exception e (str "caught exception: " (.getMessage e)))))
+
+(defn send-message [recipient-id message]
+  (send-api {:recipient {:id recipient-id}
+             :message message}))
+
+(defn image-message [image-url]
+  {:attachment {:type "image"
+                :payload {:url image-url}}})
+
+(defn text-message [message-text]
+  {:text message-text})
+
+;(defn with-quick-replies [])
