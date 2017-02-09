@@ -5,6 +5,7 @@
             [ring.middleware.json :refer [wrap-json-params]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [facebook-example.facebook :as fb]
+            [facebook-example.fb-bot :as bot]
             ; Dependencies via Heroku Example
             [compojure.handler :refer [site]]
             [clojure.java.io :as io]
@@ -18,8 +19,11 @@
 
 (defroutes fb-routes
   (GET "/" [] (splash))
-  (POST "/webhook" request (fb/route-request request) {:status 200})
-  (GET "/webhook" request (fb/webhook-is-valid? request)))
+  (POST "/webhook" request
+                   (bot/handle-message request fb/on-message fb/on-postback fb/on-attachment)
+                   {:status 200})
+  (GET "/webhook" request
+                  (bot/validate-webhook request)))
 
 (def app
   (-> (wrap-defaults fb-routes api-defaults)

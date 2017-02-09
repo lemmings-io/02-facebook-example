@@ -1,51 +1,27 @@
 (ns facebook-example.facebook
   (:gen-class)
   (:require [clojure.string :as s]
-            [facebook-example.messages :as msg]))
+            [facebook-example.messages :as msg]
+            [environ.core :refer [env]]
+            [facebook-example.fb-bot :as bot]))
 
-(defn webhook-is-valid? [request]
-  (let [params (:params request)]
-    (println "Incoming Webhook Request:")
-    (println request)
-    (if (= true (= (params "hub.mode") "subscribe")
-          (= (params "hub.verify_token") (System/getenv "FB_PAGE_ACCESS_TOKEN")))
-      {:status 200 :body (params "hub.challenge")}
-      {:status 403})))
+(defn on-message [payload]
+  (println "on-message")
+  (println payload)
+  (let [sender-id (get-in payload [:sender :id])
+        recipient-id (get-in payload [:recipient :id])
+        time-of-message (get-in payload [:timestamp])
+        message (get-in payload [:message])
+        message-text (get-in payload [:message :text])]
+    (cond
+      (s/includes? (s/lower-case message-text) "help") (bot/send-message sender-id (bot/text-message "Hi there, happy to help :)"))
+      (s/includes? (s/lower-case message-text) "image") (bot/send-message sender-id (bot/image-message "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/M101_hires_STScI-PRC2006-10a.jpg/1280px-M101_hires_STScI-PRC2006-10a.jpg"))
+      ;(s/includes? (s/lower-case message-text) "quick reply") (msg/sendQuickReply [sender-id])
+      ; If no rules apply echo the user's message-text input
+      :else (bot/send-message sender-id (bot/text-message message-text)))))
 
-(defn processText [senderID text]
-  (cond
-    (s/includes? (s/lower-case text) "help") (msg/sendTextMessage [senderID "Hi there, happy to help :)"])
-    (s/includes? (s/lower-case text) "image") (msg/sendImageMessage [senderID "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/M101_hires_STScI-PRC2006-10a.jpg/1280px-M101_hires_STScI-PRC2006-10a.jpg"])
-    (s/includes? (s/lower-case text) "quick reply") (msg/sendQuickReply [senderID])
-    ; If no rules apply echo the user's text input
-    :else (msg/sendTextMessage [senderID text])))
+(defn on-postback [payload]
+  (println "on-postback")
+  (println payload))
 
-; Process Received Message Event by Facebook
-(defn receivedMessage [event]
-  (println "Messaging Event:")
-  (println event)
-  (let [senderID (get-in event [:sender :id]) recipientID (get-in event [:recipient :id]) timeOfMessage (get-in event [:timestamp]) message (get-in event [:message])]
-    (println (str "Received message for user " senderID " and page " recipientID " at " timeOfMessage " with message:"))
-    (println message)
-    ; TODO: Check for text (onText ?), attachments (onAttachments ?)
-    ; or quick_reply (onQuickReply) in :message tree here
-    ; TODO: Simplify function to send a message vs.
-    ; (msg/sendTextMessage (receivedMessage messagingEvent))
-    (let [messageText (message :text)]
-      (cond
-        ; Check for :text
-        (contains? message :text) (processText senderID messageText)
-        ; Check for :attachments
-        (contains? message :attachments) (msg/sendTextMessage [senderID "Message with attachment received"])))))
-
-(defn route-request [request]
-  (let [data (get-in request [:params])]
-    (println "Incoming Request:")
-    (println request)
-    (when (= (:object data) "page")
-      (doseq [pageEntry (:entry data)]
-        (doseq [messagingEvent (:messaging pageEntry)]
-          ; Check for message (onMessage) or postback (onPostback) here
-          (cond (contains? messagingEvent :message) (receivedMessage messagingEvent)
-                (contains? messagingEvent :postback) (msg/sendTextMessage (receivedMessage messagingEvent))
-                :else (println (str "Webhook received unknown messagingEvent: " messagingEvent))))))))
+(defn on-attachment [payload])
