@@ -1,4 +1,4 @@
-(ns facebook-example.fb-bot
+(ns facebook-example.facebook
   (:gen-class)
   (:require [clojure.string :as s]
             [org.httpkit.client :as http]
@@ -19,6 +19,7 @@
         {:status 403})))
 
 (defn handle-message [request on-message on-postback on-attachment]
+  ; TODO: IMPLEMENT APP_SECRET VALIDATION, reference:
   (println "Incoming Request:")
   (println request)
   (let [data (get-in request [:params])]
@@ -54,6 +55,5 @@
 
 (defn text-message [message-text]
   {:text message-text})
-
 
 ;(defn with-quick-replies [])
