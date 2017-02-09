@@ -10,7 +10,6 @@
   (let [sender-id (get-in payload [:sender :id])
         recipient-id (get-in payload [:recipient :id])
         time-of-message (get-in payload [:timestamp])
-        message (get-in payload [:message])
         message-text (get-in payload [:message :text])]
     (cond
       (s/includes? (s/lower-case message-text) "help") (fb/send-message sender-id (fb/text-message "Hi there, happy to help :)"))
@@ -21,6 +20,20 @@
 
 (defn on-postback [payload]
   (println "on-postback payload:")
-  (println payload))
-
-(defn on-attachment [payload])
+  (println payload)
+  (let [sender-id (get-in payload [:sender :id])
+        recipient-id (get-in payload [:recipient :id])
+        time-of-message (get-in payload [:timestamp])
+        postback (get-in payload [:postback :payload])
+        referral (get-in payload [:postback :referral :ref])]
+    (cond
+      (= postback "GET_STARTED") (fb/send-message sender-id (fb/text-message "Welcome =)"))
+      :else (fb/send-message sender-id (fb/text-message "Sorry, I don't know how to handle that postback")))))
+(defn on-attachments [payload]
+  (println "on-attachment payload:")
+  (println payload)
+  (let [sender-id (get-in payload [:sender :id])
+        recipient-id (get-in payload [:recipient :id])
+        time-of-message (get-in payload [:timestamp])
+        attachments (get-in payload [:message :attachments])]
+    (fb/send-message sender-id (fb/text-message "Thanks for your attachments :)"))))

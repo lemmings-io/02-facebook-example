@@ -18,8 +18,8 @@
         {:status 200 :body (params "hub.challenge")}
         {:status 403})))
 
-(defn handle-message [request on-message on-postback on-attachment]
-  ; TODO: IMPLEMENT APP_SECRET VALIDATION, reference:
+(defn handle-message [request on-message on-postback on-attachments]
+  ; TODO: IMPLEMENT APP_SECRET VALIDATION
   (println "Incoming Request:")
   (println request)
   (let [data (get-in request [:params])]
@@ -28,12 +28,13 @@
         (doseq [messaging-event (:messaging page-entry)]
           ; Check for message (onMessage) or postback (onPostback) here
           (cond (contains? messaging-event :postback)   (on-postback messaging-event)
-                (contains? messaging-event :message)    (on-message messaging-event)
-                ;(contains? messaging-event :attachment) (on-attachment messaging-event)
+                (contains? messaging-event :message)    (cond (contains? (:message messaging-event) :attachments) (on-attachments messaging-event)
+                                                              :else (on-message messaging-event))
+                ;(contains? messaging-event :attachment) (on-attachments messaging-event)
                 :else (println (str "Webhook received unknown messaging-event: " messaging-event))))))))
 
 (defn send-api [message-data]
-  (println "Sending message-data")
+  (println "Sending message-data:")
   (println message-data)
   (try
       (let [response (http/post "https://graph.facebook.com/v2.6/me/messages"
@@ -41,8 +42,12 @@
                        :headers {"Content-Type" "application/json"}
                        :body (json/write-str message-data)
                        :insecure? true})]
-        (println "Sent message-data to FB:")
-        (println @response))
+        (if (= (:status @response) 200)
+            (println "Successfully sent message to FB")
+            (do
+              (println "Error sending message to FB:")
+              (println @response))))
+
       (catch Exception e (str "caught exception: " (.getMessage e)))))
 
 (defn send-message [recipient-id message]
