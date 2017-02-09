@@ -1,7 +1,6 @@
 (ns facebook-example.bot
   (:gen-class)
   (:require [clojure.string :as s]
-            [facebook-example.messages :as msg]
             [environ.core :refer [env]]
             [facebook-example.facebook :as fb]))
 
