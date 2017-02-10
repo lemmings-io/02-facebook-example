@@ -6,7 +6,6 @@
             [environ.core :refer [env]]))
 
 (def PAGE_ACCESS_TOKEN (env :page-access-token))
-(def APP_SECRET (env :app-secret))
 (def VERIFY_TOKEN (env :verify-token))
 
 (defn validate-webhook [request]
@@ -27,10 +26,9 @@
       (doseq [page-entry (:entry data)]
         (doseq [messaging-event (:messaging page-entry)]
           ; Check for message (onMessage) or postback (onPostback) here
-          (cond (contains? messaging-event :postback)   (on-postback messaging-event)
-                (contains? messaging-event :message)    (cond (contains? (:message messaging-event) :attachments) (on-attachments messaging-event)
-                                                              :else (on-message messaging-event))
-                ;(contains? messaging-event :attachment) (on-attachments messaging-event)
+          (cond (contains? messaging-event :postback) (on-postback messaging-event)
+                (contains? messaging-event :message) (cond (contains? (:message messaging-event) :attachments) (on-attachments messaging-event)
+                                                           :else (on-message messaging-event))
                 :else (println (str "Webhook received unknown messaging-event: " messaging-event))))))))
 
 (defn send-api [message-data]
@@ -47,7 +45,6 @@
             (do
               (println "Error sending message to FB:")
               (println @response))))
-
       (catch Exception e (str "caught exception: " (.getMessage e)))))
 
 (defn send-message [recipient-id message]
@@ -60,5 +57,3 @@
 
 (defn text-message [message-text]
   {:text message-text})
-
-;(defn with-quick-replies [])

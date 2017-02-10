@@ -14,7 +14,6 @@
     (cond
       (s/includes? (s/lower-case message-text) "help") (fb/send-message sender-id (fb/text-message "Hi there, happy to help :)"))
       (s/includes? (s/lower-case message-text) "image") (fb/send-message sender-id (fb/image-message "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/M101_hires_STScI-PRC2006-10a.jpg/1280px-M101_hires_STScI-PRC2006-10a.jpg"))
-      ;(s/includes? (s/lower-case message-text) "quick reply") (msg/sendQuickReply [sender-id])
       ; If no rules apply echo the user's message-text input
       :else (fb/send-message sender-id (fb/text-message message-text)))))
 
@@ -29,6 +28,7 @@
     (cond
       (= postback "GET_STARTED") (fb/send-message sender-id (fb/text-message "Welcome =)"))
       :else (fb/send-message sender-id (fb/text-message "Sorry, I don't know how to handle that postback")))))
+
 (defn on-attachments [payload]
   (println "on-attachment payload:")
   (println payload)
