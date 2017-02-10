@@ -1,2 +1,2 @@
-{:dev {:env {:page-access-token "<PAGE_ACCESS_TOKEN>"
+{:dev {:env {:page-access-token "EAAPlE5lfeCwBAC5jaWel8A9bVDQrz05AJny1z6nV5gPZAVhlnQA3AV2k47SKKpZBo2hdMBbKwy3IbFKJmh03nFNZCSVVPtPZBZArL8OLjjpRgwYIewYZA5ZBbdyxSuCEE6ZA6H82CM1KqdDSr7zeDDIIOOZCY5YJF9vdYDX4JqZBBBmAZDZD"
              :verify-token      "CHOOSE_YOUR_OWN"}}}
