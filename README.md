@@ -77,8 +77,8 @@ Check out the code to find out more. Also try sending "image" or "help" to your 
 
 	```
 	-> heroku create
-	Creating dore-heathes-1405... done, stack is cedar-14
-	https://dore-heathes-1405.herokuapp.com/ | https://git.heroku.com/dore-heathes-1405.git
+	Creating gentle-plateau-38046... done, stack is cedar-14
+	https://gentle-plateau-38046.herokuapp.com/ | https://git.heroku.com/gentle-plateau-38046.git
 	Git remote heroku added
 	```
 
@@ -97,9 +97,13 @@ Check out the code to find out more. Also try sending "image" or "help" to your 
 
 6. Now we need to setup your app on Facebook with your app hosted on Heroku.
 
-	As you've done it earlier for your local environment, in your Facebook Developer App click on the "Webhooks" section in the left sidebar and add `Callback URL` (e.g. `https://dore-heathes-1405.herokuapp.com/webhook`) and `Verify Token` accordingly.
+	As you've done it earlier for your local environment, in your Facebook Developer App click on the "Webhooks" section in the left sidebar and add `Callback URL` (e.g. `https://gentle-plateau-38046.herokuapp.com/webhook`) and `Verify Token` accordingly.
+	
+	![Heroku Webhook Setup](resources/doc/images/heroku-webhook-setup.png)
 
 7. Click "Verify and Save" and your Heroku app is connected to Facebook's Messenger API 🎈
+
+	![Heroku Webhook Success](resources/doc/images/heroku-webhook-success.png)
 	
 8. Go to your Facebook Page and send a message and your bot should echo your input again. Kudos! 🙂💧
 
