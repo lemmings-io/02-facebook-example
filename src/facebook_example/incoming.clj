@@ -72,6 +72,24 @@
       (= postback "GET_LEMMINGS_BOTS") (outgoing/send-lemmings-bots)
       :else (outgoing/error))))
 
+(def compliments ["These are beautiful eyes!" "I like this nose!" "Wow, those lips!" "Nice ears!"])
+(defn on-image [sender-id attachment]
+  ;;; see vision.clj:22 and https://cloud.google.com/vision/docs/how-to
+  ;;; for further information about the vision api
+  (let [vision-response (vision/analyze (get-in attachment [:payload :url]))]
+    (cond
+      (contains? vision-response :faceAnnotations)
+      (let [face-annotations (:faceAnnotations vision-response)]
+        (fb/send-message sender-id (fb/text-message (rand-nth compliments))))
+      (contains? vision-response :labelAnnotations)
+      (let [label-annotations (:labelAnnotations vision-response)]
+        (let [firstLabel (:description (first label-annotations))]
+          (fb/send-message sender-id (fb/text-message (str "Is that your " firstLabel "? It's beautiful!")))))
+      :else (fb/send-message sender-id (fb/text-message "Uhm, I'm not sure what that is, but its beautiful!")))))
+
+(defn on-audio [sender-id attachment]
+  (fb/send-message sender-id (fb/text-message "That sounds beautiful!")))
+
 (defn on-attachments [event]
   ; Called by handle-message when the user has sent a file or sticker
   (println "on-attachment event:")
@@ -81,4 +99,8 @@
         time-of-message (get-in event [:timestamp])
         attachments (get-in event [:message :attachments])
         user-data (facebook/get-user-profile sender-id)]
-    (outgoing/thank-for-attachment)))
+    (let [attachment (first attachments)]
+      (cond
+        (= (:type attachment) "image") (on-image sender-id attachment)
+        (= (:type attachment) "audio") (on-audio sender-id attachment)
+        :else (outgoing/thank-for-attachment)))))
