@@ -89,24 +89,34 @@ Check out the code to find out more. Also try sending "image" or "help" to your 
 	heroku config:set VERIFY_TOKEN=your_verify_token
 	```
 
-5. Eventually, you can push all changes to Heroku with:
+5. In case you made any changes in your code after downloading the original repository you need to commit them with `git add .` in your command prompt to check-in your changes to Git Version Control and add a commit message with `git commit -m "updated my bot"`.
+
+	**Keep in mind to repeat this step with every future code change to be able to push them to Heroku in the next step.**
+
+	Hint: Check out the Links section at the bottom of this tutorial for more information around GitHub & Git Version Control.
+
+7. Eventually, you can push all changes to Heroku with:
 
 	`git push heroku master`
 
 	You should see it deploy. 🍵
 
-6. Now we need to setup your app on Facebook with your app hosted on Heroku.
+8. Now we need to setup your app on Facebook with your app hosted on Heroku.
 
 	As you've done it earlier for your local environment, in your Facebook Developer App click on the "Webhooks" section in the left sidebar and add `Callback URL` (e.g. `https://gentle-plateau-38046.herokuapp.com/webhook`) and `Verify Token` accordingly.
 	
 	![Heroku Webhook Setup](resources/doc/images/heroku-webhook-setup.png)
 
-7. Click "Verify and Save" and your Heroku app is connected to Facebook's Messenger API 🎈
+9. Click "Verify and Save" and your Heroku app is connected to Facebook's Messenger API 🎈
 
 	![Heroku Webhook Success](resources/doc/images/heroku-webhook-success.png)
 	
-8. Go to your Facebook Page and send a message and your bot should echo your input again. Kudos! 🙂💧
+10. Go to your Facebook Page and send a message and your bot should echo your input again. Kudos! 🙂💧
 
 	![Echo Bot](resources/doc/images/echo-bot.png)
 
 Note: This clojure app is ready for deployment on Heroku and based on [Heroku's Clojure Getting Started Example](https://github.com/heroku/clojure-getting-started).
+
+### Links
+
+* [Getting started with GitHub and Git Version Control](https://guides.github.com/activities/hello-world/)
