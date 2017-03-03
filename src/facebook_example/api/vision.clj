@@ -31,14 +31,6 @@
                 "features" [{"type" "FACE_DETECTION"}
                             {"type" "LABEL_DETECTION"}]}]})
 
-(defn handle-vision-response-async [{:keys [status headers body error]}]
-  ;(json/read-str (:body @data) :key-fn keyword)
-  (println "yay")
-  (println status)
-  (println body)
-  (println error)
-  (first (:responses body)))
-
 ;;; (call-vision-api (b64-image) sends a generated request to the GC Vision API
 ;;; see https://cloud.google.com/vision/docs/how-to for features
 ;;; and corresponding responses
