@@ -57,3 +57,7 @@
 
 (defn text-message [message-text]
   {:text message-text})
+
+(defn quick-replies-message [message-text quick-replies]
+  {:text message-text
+   :quick_replies quick-replies})

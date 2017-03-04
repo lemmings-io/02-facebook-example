@@ -2,7 +2,8 @@
   (:gen-class)
   (:require [clojure.string :as s]
             [environ.core :refer [env]]
-            [facebook-example.facebook :as fb]))
+            [facebook-example.facebook :as fb]
+            [facebook-example.actions :as actions]))
 
 (defn on-message [payload]
   (println "on-message payload:")
@@ -26,8 +27,12 @@
         postback (get-in payload [:postback :payload])
         referral (get-in payload [:postback :referral :ref])]
     (cond
-      (= postback "GET_STARTED") (fb/send-message sender-id (fb/text-message "Welcome =)"))
+      (= postback "GET_STARTED") (actions/greet sender-id)
       :else (fb/send-message sender-id (fb/text-message "Sorry, I don't know how to handle that postback")))))
+
+(defn on-location [sender-id attachment]
+  (let [coordinates (get-in attachment [:payload :coordinates])]
+    (actions/send-directions sender-id coordinates)))
 
 (defn on-attachments [payload]
   (println "on-attachment payload:")
@@ -35,5 +40,8 @@
   (let [sender-id (get-in payload [:sender :id])
         recipient-id (get-in payload [:recipient :id])
         time-of-message (get-in payload [:timestamp])
-        attachments (get-in payload [:message :attachments])]
+        attachments (get-in payload [:message :attachments])
+        attachment (first attachments)]
+    (cond
+      (= (:type attachment) "location") (on-location sender-id attachment))
     (fb/send-message sender-id (fb/text-message "Thanks for your attachments :)"))))
