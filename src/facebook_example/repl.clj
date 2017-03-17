@@ -1,4 +1,5 @@
 (ns facebook-example.repl
+  (:gen-class)
   (:require [facebook-example.bot :as bot]
             [clj-time.core :as time]
             [clj-time.coerce :as c]
@@ -61,7 +62,7 @@
 (defn handle-message [message on-message on-postback on-attachments]
   (doall (map beautyprint (forward message on-message on-postback on-attachments))))
 
-(defn -main [& args]
+(defn -main []
   (while true
     (do
       (print (get indicators :send))

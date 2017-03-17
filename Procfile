@@ -1,1 +1,1 @@
-web: lein ring server-headless
+web: java -cp target/facebook-example-standalone.jar clojure.main -m facebook-example.web

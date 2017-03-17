@@ -19,6 +19,7 @@
   ;:hooks [environ.leiningen.hooks]
   :ring {:handler facebook-example.web/app}
   :main facebook-example.repl
+  :aot [facebook-example.web facebook-example.repl]
   :uberjar-name "facebook-example-standalone.jar")
   ; :profiles {:default [:base :dev :user]
   ;            #_:production #_{:env {:production false}}})
