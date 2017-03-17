@@ -1,6 +1,5 @@
 (ns facebook-example.repl
   (:require [facebook-example.bot :as bot]
-            [clojure.tools.cli :as cli]
             [clj-time.core :as time]
             [clj-time.coerce :as c]
             [clojure.string :as s]
@@ -45,9 +44,7 @@
 
 (defn beautiful-template [response]
   (do
-    ;(if (contains? response [:attachment :payload :text]))
     (println (str (get indicators :reply) (get-in response [:attachment :payload :text])))
-    ;(if (= (get-in response [:attachment :payload :template_type]) "buttons")
     (doall (map beautiful-button (get-in response [:attachment :payload :buttons])))))
 
 (defn beautyprint [response]
@@ -64,7 +61,7 @@
 (defn handle-message [message on-message on-postback on-attachments]
   (doall (map beautyprint (forward message on-message on-postback on-attachments))))
 
-(defn run []
+(defn -main [& args]
   (while true
     (do
       (print (get indicators :send))
