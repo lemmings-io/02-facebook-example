@@ -10,25 +10,16 @@
             [compojure.handler :refer [site]]
             [clojure.java.io :as io]
             [ring.adapter.jetty :as jetty]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [facebook-example.web]
+            [facebook-example.repl :as repl]
+            [clojure.tools.cli :as cli]))
 
-(defn splash []
-  {:status 200
-   :headers {"Content-Type" "text/plain"}
-   :body "Hello Lemming :)"})
+(def opts-spec '(["-c" "--cli" "use the bot via CLI" :id :cli :default false]))
 
-(defroutes fb-routes
-  (GET "/" [] (splash))
-  (POST "/webhook" request
-                   (fb/handle-message request bot/on-message bot/on-postback bot/on-attachments)
-                   {:status 200})
-  (GET "/webhook" request
-                  (fb/validate-webhook request)))
-
-(def app
-  (-> (wrap-defaults fb-routes api-defaults)
-      (wrap-keyword-params)
-      (wrap-json-params)))
+(defn is-cli? [opts]
+  (get-in opts [:options :cli]))
 
 (defn -main [& args]
-  (println "Started up"))
+  (let [opts (cli/parse-opts args opts-spec)]
+    (if (is-cli? opts) (repl/run) (jetty/run-jetty facebook-example.web/app {:port 3000}))))

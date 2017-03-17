@@ -17,20 +17,6 @@
         {:status 200 :body (params "hub.challenge")}
         {:status 403})))
 
-(defn handle-message [request on-message on-postback on-attachments]
-  ; TODO: IMPLEMENT APP_SECRET VALIDATION
-  (println "Incoming Request:")
-  (println request)
-  (let [data (get-in request [:params])]
-    (when (= (:object data) "page")
-      (doseq [page-entry (:entry data)]
-        (doseq [messaging-event (:messaging page-entry)]
-          ; Check for message (onMessage) or postback (onPostback) here
-          (cond (contains? messaging-event :postback) (on-postback messaging-event)
-                (contains? messaging-event :message) (cond (contains? (:message messaging-event) :attachments) (on-attachments messaging-event)
-                                                           :else (on-message messaging-event))
-                :else (println (str "Webhook received unknown messaging-event: " messaging-event))))))))
-
 (defn send-api [message-data]
   (println "Sending message-data:")
   (println message-data)
@@ -41,11 +27,11 @@
                        :body (json/write-str message-data)
                        :insecure? true})]
         (if (= (:status @response) 200)
-            (println "Successfully sent message to FB")
+            (println "Successfully sent message to FB.")
             (do
               (println "Error sending message to FB:")
               (println @response))))
-      (catch Exception e (str "caught exception: " (.getMessage e)))))
+      (catch Exception e (do (.printStackTrace e)))))
 
 (defn send-message [recipient-id message]
   (send-api {:recipient {:id recipient-id}
@@ -57,3 +43,29 @@
 
 (defn text-message [message-text]
   {:text message-text})
+
+(defn reply-to [messaging-event]
+  "Generator for reply function. Takes a messaging event and returns a partial of send-message that uses the sender as recpient."
+  (partial send-message (get-in messaging-event [:sender :id])))
+
+(defn dispatch [messaging-event on-message on-postback on-attachments]
+  ; Check for message (onMessage) or postback (onPostback) here
+  (cond
+    (contains? messaging-event :postback)
+    (on-postback messaging-event)
+
+    (contains? messaging-event :message)
+    (if (contains? (:message messaging-event) :attachments) (on-attachments messaging-event) (on-message messaging-event))
+
+    :else (println "Ignoring an unknown messaging event.")))
+
+(defn handle-message [request on-message on-postback on-attachments]
+  ; TODO: IMPLEMENT APP_SECRET VALIDATION
+  (let [data (get-in request [:params])]
+    (when (= (:object data) "page")
+      (doseq [page-entry (:entry data)]
+        (doseq [messaging-event (:messaging page-entry)]
+          (do
+            (println (str "Incoming Messaging Event: " messaging-event))
+            (doseq [reply (dispatch messaging-event on-message on-postback on-attachments)]
+              ((reply-to messaging-event) reply))))))))

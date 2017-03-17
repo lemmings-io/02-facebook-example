@@ -10,12 +10,16 @@
                  [ring/ring-defaults "0.2.1"]
                  [ring/ring-json "0.4.0"]
                  [ring/ring-jetty-adapter "1.5.0"]
-                 [environ "1.1.0"]]
+                 [environ "1.1.0"]
+                 [proto-repl "0.3.1"]
+                 [org.clojure/tools.cli "0.3.5"]
+                 [clj-time "0.13.0"]
+                 [clojure-term-colors "0.1.0-SNAPSHOT"]]
   :min-lein-version "2.0.0"
   :plugins [[lein-ring "0.9.7"]
             [lein-environ "1.1.0"]]
   ;:hooks [environ.leiningen.hooks]
-  :ring {:handler facebook-example.core/app}
+  :main facebook-example.core
   :uberjar-name "facebook-example-standalone.jar")
   ; :profiles {:default [:base :dev :user]
   ;            #_:production #_{:env {:production false}}})
