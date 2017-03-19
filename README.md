@@ -12,8 +12,8 @@ A Facebook Messenger Bot Example in Clojure
 
 4. Provide your Facebook Page Access Token, Verify Token and Page Secret for local development by creating a file called `profiles.clj` in your working directory `<your-project-name>/profiles.clj`
 
-		{:dev {:env {:page-access-token "<REPLACE>"
-		   		   	 :verify-token "<REPLACE>"}}}
+		{:dev {:env {:page-access-token "REPLACE"
+		   		   	 :verify-token "REPLACE"}}}
 		   		   	 
 ### Starting the development environment
 
