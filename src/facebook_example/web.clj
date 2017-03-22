@@ -1,4 +1,5 @@
-(ns facebook-example.core
+(ns facebook-example.web
+  (:gen-class)
   (:require [compojure.core :refer :all]
             [compojure.route :as route]
             [ring.middleware.defaults :refer :all]
@@ -30,5 +31,5 @@
       (wrap-keyword-params)
       (wrap-json-params)))
 
-(defn -main [& args]
-  (println "Started up"))
+(defn -main []
+  (jetty/run-jetty app {:port (read-string (or (env :port) "3000"))}))
