@@ -1,1 +1,1 @@
-web: lein ring server-headless
+web: java -jar target/facebook-example-standalone.jar
