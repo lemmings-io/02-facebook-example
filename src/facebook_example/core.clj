@@ -6,6 +6,7 @@
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [fb-messenger.webhook :refer [handle-events]]
             [fb-messenger.auth :refer [authenticate]]
+            [fb-messenger.send :as facebook]
             [facebook-example.bot :as bot]
             ; Dependencies via Heroku Example
             [compojure.handler :refer [site]]
