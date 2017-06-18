@@ -18,6 +18,7 @@
             [lein-environ "1.1.0"]]
   ;:hooks [environ.leiningen.hooks]
   :ring {:handler facebook-example.core/app}
+  :aot [facebook-example.core]
   :uberjar-name "facebook-example-standalone.jar")
   ; :profiles {:default [:base :dev :user]
   ;            #_:production #_{:env {:production false}}})
