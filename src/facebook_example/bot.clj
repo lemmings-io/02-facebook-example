@@ -1,60 +1,78 @@
 (ns facebook-example.bot
   (:gen-class)
-  (:require [clojure.string :as s]
+  (:require [clojure.string :as string]
             [environ.core :refer [env]]
-            [fb-messenger.send :as fb]
-            [fb-messenger.templates :as tmpl]))
+            [fb-messenger.send :as facebook]
+            [facebook-example.reaction :as reaction]))
 
-(defn on-message [payload]
-  (println "on-message payload:")
-  (println payload)
-  (let [sender-id (get-in payload [:sender :id])
-        recipient-id (get-in payload [:recipient :id])
-        time-of-message (get-in payload [:timestamp])
-        message-text (get-in payload [:message :text])]
-    (cond)))
-      (s/includes? (s/lower-case message-text) "help") (fb/send-message sender-id (tmpl/text-message "Hi there, happy to help :)"))
-      (s/includes? (s/lower-case message-text) "image") (fb/send-message sender-id (tmpl/image-message "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/M101_hires_STScI-PRC2006-10a.jpg/1280px-M101_hires_STScI-PRC2006-10a.jpg"))
-      ; If no rules apply echo the user's message-text input
-      :else (fb/send-message sender-id (tmpl/text-message message-text))
+(facebook/set-page-access-token! (env :page-access-token))
 
-(defn on-postback [payload]
-  (println "on-postback payload:")
-  (println payload)
-  (let [sender-id (get-in payload [:sender :id])
-        recipient-id (get-in payload [:recipient :id])
-        time-of-message (get-in payload [:timestamp])
-        postback (get-in payload [:postback :payload])
-        referral (get-in payload [:postback :referral :ref])]
+(def messenger-profile
+     {:get_started {:payload "get-started"}
+      :persistent_menu [{:locale "default"
+                         :call_to_actions [{:title "Help"
+                                            :type "postback"
+                                            :payload "get-help"}]}]})
+
+(try
+  (facebook/set-messenger-profile messenger-profile)
+  (catch Exception e
+    (.printStackTrace e)))
+
+(defn on-message [event]
+  (println "on-message event:")
+  (println event)
+  (let [sender-id (get-in event [:sender :id])
+        recipient-id (get-in event [:recipient :id])
+        time-of-message (get-in event [:timestamp])
+        message-text (get-in event [:message :text])]
+
     (cond
-      (= postback "GET_STARTED") (fb/send-message sender-id (tmpl/text-message "Welcome =)"))
-      :else (fb/send-message sender-id (tmpl/text-message "Sorry, I don't know how to handle that postback")))))
+      (re-matches #"(?i)hi|hello|hallo" message-text) (reaction/welcome)
+      (re-matches #"(?i)help" message-text) (reaction/help)
+      (re-matches #"(?i)image" message-text) (reaction/some-image)
+      ; If no rules apply echo the user's message-text input
+      :else (reaction/echo message-text))))
 
-(defn on-attachments [payload]
-  (println "on-attachment payload:")
-  (println payload)
-  (let [sender-id (get-in payload [:sender :id])
-        recipient-id (get-in payload [:recipient :id])
-        time-of-message (get-in payload [:timestamp])
-        attachments (get-in payload [:message :attachments])]
-    (fb/send-message sender-id (tmpl/text-message "Thanks for your attachments :)"))))
+(defn on-postback [event]
+  (println "on-postback event:")
+  (println event)
+  (let [sender-id (get-in event [:sender :id])
+        recipient-id (get-in event [:recipient :id])
+        time-of-message (get-in event [:timestamp])
+        postback (get-in event [:postback :payload])
+        referral (get-in event [:postback :referral :ref])]
+    (cond
+      (= postback "get-started") (reaction/welcome)
+      (= postback "get-help") (reaction/help)
+      :else (reaction/error))))
 
-(defn postback? [messaging-event] (contains? messaging-event :postback))
+(defn on-attachments [event]
+  (println "on-attachment event:")
+  (println event)
+  (let [sender-id (get-in event [:sender :id])
+        recipient-id (get-in event [:recipient :id])
+        time-of-message (get-in event [:timestamp])
+        attachments (get-in event [:message :attachments])]
+    (reaction/thank-for-attachment)))
+
+
+
+; You should not need to touch the following code :)
+(defn postback? [messaging-event](contains? messaging-event :postback))
 (defn attachments? [messaging-event] (contains? (:message messaging-event) :attachments))
 (defn message? [messaging-event] (contains? messaging-event :message))
 
-(defn handle-message [payload]
-  (condp
-    (postback? messaging-event)
-    (on-postback messaging-event)
+(defn handle-message [messaging-event]
+  (let [sender-id (get-in messaging-event [:sender :id])
+        replies (cond
+                  (postback? messaging-event) (on-postback messaging-event)
+                  (message? messaging-event)
+                  (cond
+                    (attachments? messaging-event)  (on-attachments messaging-event)
+                    :else                           (on-message messaging-event))
+                  :else (println (str "Webhook received unknown messaging-event: " messaging-event)))]
+    (doseq [message replies]
+      (facebook/send-message sender-id message))))
 
-    (message? messaging-event
-      (cond
-        (attachments? messaging-event)
-        (on-attachments messaging-event)
 
-        :else
-        (on-message messaging-event)))
-
-    :else
-    (println (str "Webhook received unknown messaging-event: " messaging-event))))
