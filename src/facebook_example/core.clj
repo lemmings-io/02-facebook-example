@@ -4,14 +4,15 @@
             [ring.middleware.defaults :refer :all]
             [ring.middleware.json :refer [wrap-json-params]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
-            [fb-messenger.send :refer [handle-webhook]]
+            [fb-messenger.webhook :refer [handle-events]]
             [fb-messenger.auth :refer [authenticate]]
             [facebook-example.bot :as bot]
             ; Dependencies via Heroku Example
             [compojure.handler :refer [site]]
             [clojure.java.io :as io]
             [ring.adapter.jetty :as jetty]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [clojure.core.async :as async]))
 
 (defn splash []
   {:status 200
@@ -20,12 +21,14 @@
 
 (defroutes fb-routes
   (GET  "/"        [] (splash))
-  (POST "/webhook" request
-                   (try
-                     (handle-webhook bot/handle-message request)
-                     (catch Exception e (.printStackTrace e))
-                     (finally {:status 200})))
-  (GET  "/webhook" authenticate))
+  (POST "/facebook/webhook" request
+    (async/go
+       (try
+         (handle-events bot/handle-message request)
+         (catch Exception e (.printStackTrace e))))
+    {:status 200})
+
+  (GET  "/facebook/webhook" authenticate))
 
 (def app
   (-> (wrap-defaults fb-routes api-defaults)
