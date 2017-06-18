@@ -12,8 +12,8 @@ A Facebook Messenger Bot Example in Clojure
 
 4. Provide your Facebook Page Access Token, Verify Token and Page Secret for local development by creating a file called `profiles.clj` in your working directory `<your-project-name>/profiles.clj`
 
-		{:dev {:env {:page-access-token "<REPLACE>"
-		   		   	 :verify-token "<REPLACE>"}}}
+		{:dev {:env {:page-access-token "REPLACE"
+		   		   	 :verify-token "REPLACE"}}}
 		   		   	 
 ### Starting the development environment
 
@@ -87,6 +87,7 @@ Check out the code to find out more. Also try sending "image" or "help" to your 
 	```
 	heroku config:set PAGE_ACCESS_TOKEN=your_page_access_token
 	heroku config:set VERIFY_TOKEN=your_verify_token
+	heroku config:set LEIN_BUILD_TASK='ring uberjar'
 	```
 
 5. In case you made any changes in your code after downloading the original repository you need to commit them with `git add .` in your command prompt to check-in your changes to Git Version Control and add a commit message with `git commit -m "updated my bot"`.
