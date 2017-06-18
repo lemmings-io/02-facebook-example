@@ -27,10 +27,10 @@
 (defroutes fb-routes
   (GET  "/"        [] (splash))
   (POST "/facebook/webhook" request
-    (async/go
-       (try
-         (handle-events bot/handle-message request)
-         (catch Exception e (.printStackTrace e))))
+    (try
+      (println (get request :json-params))
+      (bot/handle-event (get request :json-params))
+      (catch Exception e (.printStackTrace e)))
     {:status 200})
   (GET "/facebook/webhook" request
     ; fb-messenger.auth/authenticate expects the query-params map and inspects
