@@ -19,6 +19,8 @@
 (fb-messenger.send/set-page-access-token! (env :page-access-token))
 (fb-messenger.auth/set-token! (env :verify-token))
 
+(println (env :page-access-token))
+
 (defn splash []
   {:status 200
    :headers {"Content-Type" "text/plain"}
@@ -28,8 +30,7 @@
   (GET  "/"        [] (splash))
   (POST "/facebook/webhook" request
     (try
-      (println (get request :json-params))
-      (bot/handle-event (get request :json-params))
+      (handle-events bot/handle-event request)
       (catch Exception e (.printStackTrace e)))
     {:status 200})
   (GET "/facebook/webhook" request
