@@ -5,19 +5,13 @@
             [fb-messenger.send :as facebook]
             [facebook-example.reaction :as reaction]))
 
-(facebook/set-page-access-token! (env :page-access-token))
-
-(def messenger-profile
-     {:get_started {:payload "get-started"}
-      :persistent_menu [{:locale "default"
-                         :call_to_actions [{:title "Help"
-                                            :type "postback"
-                                            :payload "get-help"}]}]})
-
-(try
-  (facebook/set-messenger-profile messenger-profile)
-  (catch Exception e
-    (.printStackTrace e)))
+; Uncomment if you want to set a peristent menu in your bot:
+; (facebook/set-messenger-profile
+;      {:get_started {:payload "get-started"}
+;       :persistent_menu [{:locale "default"
+;                          :call_to_actions [{:title "Help"
+;                                             :type "postback"
+;                                             :payload "get-help"}]}]})
 
 (defn on-message [event]
   (println "on-message event:")
@@ -56,8 +50,6 @@
         attachments (get-in event [:message :attachments])]
     (reaction/thank-for-attachment)))
 
-
-
 ; You should not need to touch the following code :)
 (defn postback? [messaging-event](contains? messaging-event :postback))
 (defn attachments? [messaging-event] (contains? (:message messaging-event) :attachments))
@@ -74,5 +66,3 @@
                   :else (println (str "Webhook received unknown messaging-event: " messaging-event)))]
     (doseq [message replies]
       (facebook/send-message sender-id message))))
-
-

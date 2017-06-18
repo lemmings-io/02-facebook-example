@@ -14,6 +14,8 @@
             [environ.core :refer [env]]
             [clojure.core.async :as async]))
 
+(facebook/set-page-access-token! (env :page-access-token))
+
 (defn splash []
   {:status 200
    :headers {"Content-Type" "text/plain"}
