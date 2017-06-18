@@ -2,8 +2,10 @@
   (:gen-class)
   (:require [clojure.string :as string]
             [environ.core :refer [env]]
-            [fb-messenger.send :as facebook]
-            [facebook-example.reaction :as reaction]))
+            [fb-messenger.send :as fb]
+            [fb-messenger.templates :as response]
+            [facebook-example.reaction :as reaction]
+            [clojure.core.match :refer [match]]))
 
 ; Uncomment if you want to set a peristent menu in your bot:
 ; (facebook/set-messenger-profile
@@ -13,56 +15,35 @@
 ;                                             :type "postback"
 ;                                             :payload "get-help"}]}]})
 
-(defn on-message [event]
-  (println "on-message event:")
-  (println event)
-  (let [sender-id (get-in event [:sender :id])
-        recipient-id (get-in event [:recipient :id])
-        time-of-message (get-in event [:timestamp])
-        message-text (get-in event [:message :text])]
+; Facebook sends us a rather complex JSON object with lots of nesting
+; Before looking deeper into what we actually got, we pre-process this JSON
+; and turn it into a simpler structure. This will make it much clearer
+; to see the various states our bot can be in later.
+(defn preprocess-event [event]
+  (match [event]
+    ; The user `sender-id` has sent us a message `text`.
+    [{:message {:text text} :sender {:id sender-id}}]
+    {:message (clojure.string/lower-case text) :text text :sender-id sender-id :event event}
 
-    (cond
-      (re-matches #"(?i)hi|hello|hallo" message-text) (reaction/welcome)
-      (re-matches #"(?i)help" message-text) (reaction/help)
-      (re-matches #"(?i)image" message-text) (reaction/some-image)
-      ; If no rules apply echo the user's message-text input
-      :else (reaction/echo message-text))))
+    ; The user `sender-id` has pressed a button for which a "postback" event has been defined
+    [{:postback {:payload postback} :sender {:id sender-id}}]
+    {:postback postback :sender-id sender-id :event event}
 
-(defn on-postback [event]
-  (println "on-postback event:")
-  (println event)
-  (let [sender-id (get-in event [:sender :id])
-        recipient-id (get-in event [:recipient :id])
-        time-of-message (get-in event [:timestamp])
-        postback (get-in event [:postback :payload])
-        referral (get-in event [:postback :referral :ref])]
-    (cond
-      (= postback "get-started") (reaction/welcome)
-      (= postback "get-help") (reaction/help)
-      :else (reaction/error))))
+    :else
+    {:event event}))
 
-(defn on-attachments [event]
-  (println "on-attachment event:")
-  (println event)
-  (let [sender-id (get-in event [:sender :id])
-        recipient-id (get-in event [:recipient :id])
-        time-of-message (get-in event [:timestamp])
-        attachments (get-in event [:message :attachments])]
-    (reaction/thank-for-attachment)))
+; Here's where the logic of our bot lives.
+(defn process-event [event]
+  (match [event]
+    [{:text (:or "hi" "hello" "lol")}]
+    [(response/text-message "user said hi")
+     (response/text-message "lol")]
 
-; You should not need to touch the following code :)
-(defn postback? [messaging-event](contains? messaging-event :postback))
-(defn attachments? [messaging-event] (contains? (:message messaging-event) :attachments))
-(defn message? [messaging-event] (contains? messaging-event :message))
+    :else
+    (println (str "unknown event: " event))))
 
-(defn handle-message [messaging-event]
-  (let [sender-id (get-in messaging-event [:sender :id])
-        replies (cond
-                  (postback? messaging-event) (on-postback messaging-event)
-                  (message? messaging-event)
-                  (cond
-                    (attachments? messaging-event)  (on-attachments messaging-event)
-                    :else                           (on-message messaging-event))
-                  :else (println (str "Webhook received unknown messaging-event: " messaging-event)))]
-    (doseq [message replies]
-      (facebook/send-message sender-id message))))
+(defn handle-event [raw-event]
+  (let
+    [event (preprocess-event raw-event)
+     result (process-event event)]
+    (doseq [message result] (fb/send-message (get event :sender-id) message))))
