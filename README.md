@@ -90,15 +90,11 @@ Check out the code to find out more. Also try sending "image" or "help" to your 
 	heroku config:set LEIN_BUILD_TASK='ring uberjar'
 	```
 
-5. In case you made any changes in your code after downloading the original repository you need to commit them with `git add .` in your command prompt to check-in your changes to Git Version Control and add a commit message with `git commit -m "updated my bot"`.
+5. You can deploy to heroku with the following command:
 
-	**Keep in mind to repeat this step with every future code change to be able to push them to Heroku in the next step.**
-
-	Hint: Check out the Links section at the bottom of this tutorial for more information around GitHub & Git Version Control.
-
-7. Eventually, you can push all changes to Heroku with:
-
-	`git push heroku master`
+	```shell
+	./heroku.sh
+	```
 
 	You should see it deploy. 🍵
 
