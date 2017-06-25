@@ -28,7 +28,7 @@
                                       :payload "HEROKU"}])])
 
 (defn send-clojure-docs []
-  [(templates/text-message "Find Clojure docs here:")])
+  [(templates/text-message "Find Clojure docs here: https://clojuredocs.org/")])
 
 (defn send-heroku-instructions []
-  [(templates/text-message "Find Heroku instructions here:")])
+  [(templates/text-message "Find Heroku instructions here: https://github.com/lemmings-io/02-facebook-example#deploying-to-heroku")])

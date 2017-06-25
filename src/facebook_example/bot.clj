@@ -6,7 +6,7 @@
             [fb-messenger.send :as facebook]
             [facebook-example.reaction :as reaction]))
 
-; Uncomment if you want to set a peristent menu in your bot:
+; Uncomment if you want to set a persistent menu in your bot:
 ; (facebook/set-messenger-profile
 ;      {:get_started {:payload "get-started"}
 ;       :persistent_menu [{:locale "default"
@@ -63,15 +63,15 @@
     (reaction/thank-for-attachment)))
 
 ; You should not need to touch the following code :)
-(defn postback? [messaging-event](contains? messaging-event :postback))
-(defn attachments? [messaging-event] (contains? (:message messaging-event) :attachments))
-(defn message? [messaging-event] (contains? messaging-event :message))
-
 (defn process-event [event]
   (match [event]
     ; The user `sender-id` has selected one quick-reply option
-    [{:message {:quick_reply quick-reply :text text} :sender {:id sender-id}}]
+    [{:message {:quick_reply quick-reply} :sender {:id sender-id}}]
     (on-quick-reply event)
+
+    ; The user `sender-id` has sent a text message
+    [{:message {:text text} :sender {:id sender-id}}]
+    (on-message event)
 
     ; The user `sender-id` has sent a file or sticker
     [{:message {:attachments attachments} :sender {:id sender-id}}]
@@ -82,7 +82,7 @@
     (on-postback event)
 
     :else
-    (on-message event)))
+    (println (str "Webhook received unknown messaging-event: " event))))
 
 (defn handle-message [messaging-event]
   (let [sender-id (get-in messaging-event [:sender :id])
