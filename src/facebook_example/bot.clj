@@ -34,7 +34,7 @@
   (println event)
   (let [sender-id (get-in event [:sender :id])
         quick-reply (get-in event [:message :quick_reply])
-        quick-reply-payload (get-in event [:message :quick_reply :payload])]
+        quick-reply-payload (:payload quick-reply)]
     (cond
       (= quick-reply-payload "CLOJURE") (reaction/send-clojure-docs)
       (= quick-reply-payload "HEROKU") (reaction/send-heroku-instructions)
@@ -66,19 +66,19 @@
 (defn process-event [event]
   (match [event]
     ; The user `sender-id` has selected one quick-reply option
-    [{:message {:quick_reply quick-reply} :sender {:id sender-id}}]
+    [{:message {:quick_reply _}}]
     (on-quick-reply event)
 
     ; The user `sender-id` has sent a text message
-    [{:message {:text text} :sender {:id sender-id}}]
+    [{:message {:text _}}]
     (on-message event)
 
     ; The user `sender-id` has sent a file or sticker
-    [{:message {:attachments attachments} :sender {:id sender-id}}]
+    [{:message {:attachments _}}]
     (on-attachments event)
 
     ; The user `sender-id` has pressed a button for which a "postback" event has been defined
-    [{:postback {:payload postback} :sender {:id sender-id}}]
+    [{:postback {:payload _}}]
     (on-postback event)
 
     :else
