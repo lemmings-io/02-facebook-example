@@ -16,7 +16,7 @@
   [(templates/text-message "Sorry, I didn't get that! :(")])
 
 (defn thank-for-attachment []
-  [(templates/text-message "Thank you for your attachment")])
+  [(templates/text-message "Thank you for your attachment :)")])
 
 (defn help []
   [(templates/quick-replies-message "What do you need help with?"
