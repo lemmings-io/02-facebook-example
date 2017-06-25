@@ -1,6 +1,7 @@
 (ns facebook-example.bot
   (:gen-class)
   (:require [clojure.string :as string]
+            [clojure.core.match :refer [match]]
             [environ.core :refer [env]]
             [fb-messenger.send :as facebook]
             [facebook-example.reaction :as reaction]))
@@ -27,6 +28,17 @@
       (re-matches #"(?i)image" message-text) (reaction/some-image)
       ; If no rules apply echo the user's message-text input
       :else (reaction/echo message-text))))
+
+(defn on-quick-reply [event]
+  (println "on-quickreply event:")
+  (println event)
+  (let [sender-id (get-in event [:sender :id])
+        quick-reply (get-in event [:message :quick_reply])
+        quick-reply-payload (get-in event [:message :quick_reply :payload])]
+    (cond
+      (= quick-reply-payload "CLOJURE") (reaction/send-clojure-docs)
+      (= quick-reply-payload "HEROKU") (reaction/send-heroku-instructions)
+      :else (reaction/error))))
 
 (defn on-postback [event]
   (println "on-postback event:")
@@ -55,14 +67,25 @@
 (defn attachments? [messaging-event] (contains? (:message messaging-event) :attachments))
 (defn message? [messaging-event] (contains? messaging-event :message))
 
+(defn process-event [event]
+  (match [event]
+    ; The user `sender-id` has selected one quick-reply option
+    [{:message {:quick_reply quick-reply :text text} :sender {:id sender-id}}]
+    (on-quick-reply event)
+
+    ; The user `sender-id` has sent a file or sticker
+    [{:message {:attachments attachments} :sender {:id sender-id}}]
+    (on-attachments event)
+
+    ; The user `sender-id` has pressed a button for which a "postback" event has been defined
+    [{:postback {:payload postback} :sender {:id sender-id}}]
+    (on-postback event)
+
+    :else
+    (on-message event)))
+
 (defn handle-message [messaging-event]
   (let [sender-id (get-in messaging-event [:sender :id])
-        replies (cond
-                  (postback? messaging-event) (on-postback messaging-event)
-                  (message? messaging-event)
-                  (cond
-                    (attachments? messaging-event)  (on-attachments messaging-event)
-                    :else                           (on-message messaging-event))
-                  :else (println (str "Webhook received unknown messaging-event: " messaging-event)))]
+        replies (process-event messaging-event)]
     (doseq [message replies]
       (facebook/send-message sender-id message))))

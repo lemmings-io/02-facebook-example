@@ -2,9 +2,6 @@
   (:gen-class)
   (:require [fb-messenger.templates :as templates]))
 
-(defn help []
-  [(templates/text-message "Hi there, happy to help :)")])
-
 (defn some-image []
   [(templates/image-message "https://upload.wikimedia.org/wikipedia/commons/e/ef/Tunturisopuli_Lemmus_Lemmus.jpg")])
 
@@ -20,3 +17,18 @@
 
 (defn thank-for-attachment []
   [(templates/text-message "Thank you for your attachment")])
+
+(defn help []
+  [(templates/quick-replies-message "What do you need help with?"
+                                    [{:content_type "text"
+                                      :title "Clojure"
+                                      :payload "CLOJURE"}
+                                     {:content_type "text"
+                                      :title "Heroku"
+                                      :payload "HEROKU"}])])
+
+(defn send-clojure-docs []
+  [(templates/text-message "Find Clojure docs here:")])
+
+(defn send-heroku-instructions []
+  [(templates/text-message "Find Heroku instructions here:")])
