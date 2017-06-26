@@ -15,6 +15,7 @@
 ;                                             :payload "get-help"}]}]})
 
 (defn on-message [event]
+  ; Called by handle-message when the user has sent a text message
   (println "on-message event:")
   (println event)
   (let [sender-id (get-in event [:sender :id])
@@ -30,6 +31,8 @@
       :else (reaction/echo message-text))))
 
 (defn on-quick-reply [event]
+  ; Called by handle-message when the user has tapped a quick reply
+  ; https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies
   (println "on-quickreply event:")
   (println event)
   (let [sender-id (get-in event [:sender :id])
@@ -41,6 +44,8 @@
       :else (reaction/error))))
 
 (defn on-postback [event]
+  ; Called by handle-message when the user has tapped a postback button
+  ; https://developers.facebook.com/docs/messenger-platform/send-api-reference/postback-button
   (println "on-postback event:")
   (println event)
   (let [sender-id (get-in event [:sender :id])
@@ -54,6 +59,7 @@
       :else (reaction/error))))
 
 (defn on-attachments [event]
+  ; Called by handle-message when the user has sent a file or sticker
   (println "on-attachment event:")
   (println event)
   (let [sender-id (get-in event [:sender :id])
