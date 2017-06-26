@@ -20,12 +20,8 @@
 
 (defn help []
   [(templates/quick-replies-message "What do you need help with?"
-                                    [{:content_type "text"
-                                      :title "Clojure"
-                                      :payload "CLOJURE"}
-                                     {:content_type "text"
-                                      :title "Heroku"
-                                      :payload "HEROKU"}])])
+                                    [(templates/quick-reply "Clojure" "CLOJURE" "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Clojure_logo.svg/2000px-Clojure_logo.svg.png")
+                                     (templates/quick-reply "Heroku" "HEROKU" "https://marketplace-cdn.atlassian.com/files/images/5922c67f-a338-470d-9979-eed82d54a2fa.png")])])
 
 (defn send-clojure-docs []
   [(templates/text-message "Find Clojure docs here: https://clojuredocs.org/")])
