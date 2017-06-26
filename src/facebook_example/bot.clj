@@ -70,7 +70,7 @@
 
 ; You should not need to touch the following code :)
 (defn process-event [event]
-  ; The order of the matchers is important!
+  ; The order of the matching clauses is important!
   (match [event]
     ; The user has selected one quick-reply option
     [{:message {:quick_reply _}}]
