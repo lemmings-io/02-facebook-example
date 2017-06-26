@@ -66,19 +66,19 @@
 (defn process-event [event]
   ; The order of the matchers is important!
   (match [event]
-    ; The user `sender-id` has selected one quick-reply option
+    ; The user has selected one quick-reply option
     [{:message {:quick_reply _}}]
     (on-quick-reply event)
 
-    ; The user `sender-id` has sent a text message
-    [{:message {:text _}}]
-    (on-message event)
-
-    ; The user `sender-id` has sent a file or sticker
+    ; The user has sent a file or sticker
     [{:message {:attachments _}}]
     (on-attachments event)
 
-    ; The user `sender-id` has pressed a button for which a "postback" event has been defined
+    ; The user has sent a text message
+    [{:message {:text _}}]
+    (on-message event)
+
+    ; The user has pressed a button for which a "postback" event has been defined
     [{:postback {:payload _}}]
     (on-postback event)
 
