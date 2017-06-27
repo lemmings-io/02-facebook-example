@@ -8,11 +8,11 @@
 
 ; Uncomment if you want to set a persistent menu in your bot:
 ; (facebook/set-messenger-profile
-;      {:get_started {:payload "get-started"}
+;      {:get_started {:payload "GET_STARTED"}
 ;       :persistent_menu [{:locale "default"
 ;                          :call_to_actions [{:title "Help"
 ;                                             :type "postback"
-;                                             :payload "get-help"}]}]})
+;                                             :payload "GET_HELP"}]}]})
 
 (defn on-message [event]
   ; Called by handle-message when the user has sent a text message
