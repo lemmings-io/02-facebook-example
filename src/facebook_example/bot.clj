@@ -1,19 +1,21 @@
 (ns facebook-example.bot
   (:gen-class)
   (:require [clojure.string :as string]
+            [clojure.core.match :refer [match]]
             [environ.core :refer [env]]
             [fb-messenger.send :as facebook]
             [facebook-example.reaction :as reaction]))
 
-; Uncomment if you want to set a peristent menu in your bot:
+; Uncomment if you want to set a persistent menu in your bot:
 ; (facebook/set-messenger-profile
-;      {:get_started {:payload "get-started"}
+;      {:get_started {:payload "GET_STARTED"}
 ;       :persistent_menu [{:locale "default"
 ;                          :call_to_actions [{:title "Help"
 ;                                             :type "postback"
-;                                             :payload "get-help"}]}]})
+;                                             :payload "GET_HELP"}]}]})
 
 (defn on-message [event]
+  ; Called by handle-message when the user has sent a text message
   (println "on-message event:")
   (println event)
   (let [sender-id (get-in event [:sender :id])
@@ -28,7 +30,22 @@
       ; If no rules apply echo the user's message-text input
       :else (reaction/echo message-text))))
 
+(defn on-quick-reply [event]
+  ; Called by handle-message when the user has tapped a quick reply
+  ; https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies
+  (println "on-quickreply event:")
+  (println event)
+  (let [sender-id (get-in event [:sender :id])
+        quick-reply (get-in event [:message :quick_reply])
+        quick-reply-payload (:payload quick-reply)]
+    (cond
+      (= quick-reply-payload "CLOJURE") (reaction/send-clojure-docs)
+      (= quick-reply-payload "HEROKU") (reaction/send-heroku-instructions)
+      :else (reaction/error))))
+
 (defn on-postback [event]
+  ; Called by handle-message when the user has tapped a postback button
+  ; https://developers.facebook.com/docs/messenger-platform/send-api-reference/postback-button
   (println "on-postback event:")
   (println event)
   (let [sender-id (get-in event [:sender :id])
@@ -42,6 +59,7 @@
       :else (reaction/error))))
 
 (defn on-attachments [event]
+  ; Called by handle-message when the user has sent a file or sticker
   (println "on-attachment event:")
   (println event)
   (let [sender-id (get-in event [:sender :id])
@@ -51,18 +69,30 @@
     (reaction/thank-for-attachment)))
 
 ; You should not need to touch the following code :)
-(defn postback? [messaging-event](contains? messaging-event :postback))
-(defn attachments? [messaging-event] (contains? (:message messaging-event) :attachments))
-(defn message? [messaging-event] (contains? messaging-event :message))
+(defn process-event [event]
+  ; The order of the matching clauses is important!
+  (match [event]
+    ; The user has selected one quick-reply option
+    [{:message {:quick_reply _}}]
+    (on-quick-reply event)
+
+    ; The user has sent a file or sticker
+    [{:message {:attachments _}}]
+    (on-attachments event)
+
+    ; The user has sent a text message
+    [{:message {:text _}}]
+    (on-message event)
+
+    ; The user has pressed a button for which a "postback" event has been defined
+    [{:postback {:payload _}}]
+    (on-postback event)
+
+    :else
+    (println (str "Webhook received unknown messaging-event: " event))))
 
 (defn handle-message [messaging-event]
   (let [sender-id (get-in messaging-event [:sender :id])
-        replies (cond
-                  (postback? messaging-event) (on-postback messaging-event)
-                  (message? messaging-event)
-                  (cond
-                    (attachments? messaging-event)  (on-attachments messaging-event)
-                    :else                           (on-message messaging-event))
-                  :else (println (str "Webhook received unknown messaging-event: " messaging-event)))]
+        replies (process-event messaging-event)]
     (doseq [message replies]
       (facebook/send-message sender-id message))))
