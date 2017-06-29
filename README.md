@@ -57,6 +57,7 @@ A Facebook Messenger Bot Example in Clojure
 4. Then go to "Messenger" in the left sidebar and in the section "Webhooks" select your page to subscribe your webhook to the pages events. Subscribe to the events `messages` and `messaging_postbacks`, you can subscribe to more events later.
 
 	![Webhook Subscription](resources/doc/images/webhook-subscription.png)
+	![Webhook Events](resources/doc/images/webhook-events.png)
 
 5. Go to your Facebook Page and send a message and your bot echo's your input. Congratulations!💧
 
