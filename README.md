@@ -63,7 +63,7 @@ A Facebook Messenger Bot Example in Clojure
 
 	![Echo Bot](resources/doc/images/echo-bot.png)
 	
-Check out the code to find out more. Also try sending "image" or "help" to your bot. 🙂
+Check out the code to find out more. Also try sending "image", "help" or thumbs up to your bot. 🙂
 
 ### Deploying to Heroku
 
