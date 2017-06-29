@@ -53,12 +53,17 @@ A Facebook Messenger Bot Example in Clojure
 3. Click "Verify and Save" and your app is connected to Facebook's Messenger API. 🎈
 
 	![Webhook Success](resources/doc/images/webhook-success.png)
-	
-4. Go to your Facebook Page and send a message and your bot echo's your input. Congratulations!💧
+
+4. Then go to "Messenger" in the left sidebar and in the section "Webhooks" select your page to subscribe your webhook to the pages events. Subscribe to the events `messages` and `messaging_postbacks`, you can subscribe to more events later.
+
+	![Webhook Subscription](resources/doc/images/webhook-subscription.png)
+	![Webhook Events](resources/doc/images/webhook-events.png)
+
+5. Go to your Facebook Page and send a message and your bot echo's your input. Congratulations!💧
 
 	![Echo Bot](resources/doc/images/echo-bot.png)
 	
-Check out the code to find out more. Also try sending "image" or "help" to your bot. 🙂
+Check out the code to find out more. Also try sending "image", "help" or thumbs up to your bot. 🙂
 
 ### Deploying to Heroku
 
