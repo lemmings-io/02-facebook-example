@@ -96,11 +96,26 @@
         replies (process-event messaging-event)]
     (doseq [reply replies]
       (match [reply]
+
+        ; The bot wants to send a message (text, images, videos etc.) after n milliseconds
+        [{:message message :delay delay}] 
+        (do
+          (Thread/sleep delay)
+          (facebook/send-message sender-id message))
+
         ; The bot wants to send a message (text, images, videos etc.)
-        [{:message message}] (facebook/send-message sender-id message)
+        [{:message message}]
+        (facebook/send-message sender-id message)
         
-        ; The bot wants to perform an action (mark_seen, typing_on, typing_off)
-        [{:action action}] (facebook/send-sender-action sender-id action)
+        ; The bot wants to type on for n milliseconds
+        [{:action action :duration duration}]
+        (do
+          (facebook/send-sender-action sender-id action)
+          (Thread/sleep duration))
+
+        ; The bot wants to perform an action (mark_seen or typing_off)
+        [{:action action}]
+        (facebook/send-sender-action sender-id action)
 
         ; The bot wants to wait n milliseconds
         :else

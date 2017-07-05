@@ -9,7 +9,8 @@
   [{:message (templates/text-message message-text)}])
 
 (defn welcome []
-  [{:message (templates/text-message "Welcome, fellow lemming =)")}
+  [{:action "typing_on" :duration 3000}
+   {:message (templates/text-message "Welcome, fellow lemming =)")}
    {:message (templates/image-message "https://upload.wikimedia.org/wikipedia/commons/e/ef/Tunturisopuli_Lemmus_Lemmus.jpg")}])
 
 (defn error []
@@ -24,7 +25,7 @@
                                                (templates/quick-reply "Heroku" "HEROKU" "https://marketplace-cdn.atlassian.com/files/images/5922c67f-a338-470d-9979-eed82d54a2fa.png")])}])
 
 (defn send-clojure-docs []
-  [{:action "typing_on"}])
+  [{:message (templates/text-message "Find Clojure docs here: https://clojuredocs.org/")}])
 
 (defn send-heroku-instructions []
   [{:message (templates/text-message "Find Heroku instructions here: https://github.com/lemmings-io/02-facebook-example#deploying-to-heroku")}])
