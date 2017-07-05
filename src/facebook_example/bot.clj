@@ -100,7 +100,7 @@
         [{:message message}] (facebook/send-message sender-id message)
         
         ; The bot wants to perform an action
-        [{:action action}] (facebook/send-sender-action action)
+        [{:action action}] (facebook/send-sender-action sender-id action)
 
         ; The bot wants to wait n milliseconds
         :else
