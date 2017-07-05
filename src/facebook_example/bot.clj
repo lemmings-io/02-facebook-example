@@ -99,7 +99,7 @@
         ; The bot wants to send a message (text, images, videos etc.)
         [{:message message}] (facebook/send-message sender-id message)
         
-        ; The bot wants to perform an action
+        ; The bot wants to perform an action (mark_seen, typing_on, typing_off)
         [{:action action}] (facebook/send-sender-action sender-id action)
 
         ; The bot wants to wait n milliseconds

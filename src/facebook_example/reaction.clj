@@ -24,7 +24,7 @@
                                                (templates/quick-reply "Heroku" "HEROKU" "https://marketplace-cdn.atlassian.com/files/images/5922c67f-a338-470d-9979-eed82d54a2fa.png")])}])
 
 (defn send-clojure-docs []
-  [{:message (templates/text-message "Find Clojure docs here: https://clojuredocs.org/")}])
+  [{:action "typing_on"}])
 
 (defn send-heroku-instructions []
   [{:message (templates/text-message "Find Heroku instructions here: https://github.com/lemmings-io/02-facebook-example#deploying-to-heroku")}])
