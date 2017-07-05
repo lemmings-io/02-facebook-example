@@ -94,5 +94,14 @@
 (defn handle-message [messaging-event]
   (let [sender-id (get-in messaging-event [:sender :id])
         replies (process-event messaging-event)]
-    (doseq [message replies]
-      (facebook/send-message sender-id message))))
+    (doseq [reply replies]
+      (match [reply]
+        ; The bot wants to send a message (text, images, videos etc.)
+        [{:message message}] (facebook/send-message sender-id message)
+        
+        ; The bot wants to perform an action
+        [{:action action}] (facebook/send-sender-action action)
+
+        ; The bot wants to wait n milliseconds
+        :else
+        (println (str "Do clojure spec"))))))
