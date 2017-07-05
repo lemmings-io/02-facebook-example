@@ -98,9 +98,9 @@
       (match [reply]
 
         ; The bot wants to send a message (text, images, videos etc.) after n milliseconds
-        [{:message message :delay delay}] 
+        [{:message message :timeout timeout}] 
         (do
-          (Thread/sleep delay)
+          (Thread/sleep timeout)
           (facebook/send-message sender-id message))
 
         ; The bot wants to send a message (text, images, videos etc.)
@@ -108,10 +108,10 @@
         (facebook/send-message sender-id message)
         
         ; The bot wants to type on for n milliseconds
-        [{:action action :duration duration}]
+        [{:action action :timeout timeout}]
         (do
           (facebook/send-sender-action sender-id action)
-          (Thread/sleep duration))
+          (Thread/sleep timeout))
 
         ; The bot wants to perform an action (mark_seen or typing_off)
         [{:action action}]
