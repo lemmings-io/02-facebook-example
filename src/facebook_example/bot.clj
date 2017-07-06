@@ -98,7 +98,7 @@
       (match [reply]
 
         ; The bot wants to send a message (text, images, videos etc.) after n milliseconds
-        [{:message message :timeout timeout}] 
+        [{:message message :delay timeout}] 
         (do
           (Thread/sleep timeout)
           (facebook/send-message sender-id message))
@@ -107,16 +107,16 @@
         [{:message message}]
         (facebook/send-message sender-id message)
         
-        ; The bot wants to type on for n milliseconds
-        [{:action action :timeout timeout}]
+        ; The bot wants to perform an action for n milliseconds (typing_on in most cases)
+        [{:action action :duration timeout}]
         (do
           (facebook/send-sender-action sender-id action)
           (Thread/sleep timeout))
 
-        ; The bot wants to perform an action (mark_seen or typing_off)
+        ; The bot wants to perform an action (mark_seen, typing_on, typing_off)
         [{:action action}]
         (facebook/send-sender-action sender-id action)
 
-        ; The bot wants to wait n milliseconds
         :else
-        (println (str "Do clojure spec"))))))
+        (throw (ex-info "You have provided an invalid pattern in your reply."
+                        {:causes reply}))))))

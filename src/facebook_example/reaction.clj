@@ -9,7 +9,7 @@
   [{:message (templates/text-message message-text)}])
 
 (defn welcome []
-  [{:action "typing_on" :timeout 3000}
+  [{:action "typing_on" :duration 3000}
    {:message (templates/text-message "Welcome, fellow lemming =)")}
    {:message (templates/image-message "https://upload.wikimedia.org/wikipedia/commons/e/ef/Tunturisopuli_Lemmus_Lemmus.jpg")}])
 
@@ -17,7 +17,7 @@
   [{:message (templates/text-message "Sorry, I didn't get that! :(")}])
 
 (defn thank-for-attachment []
-  [{:message (templates/text-message "Thank you for your attachment :)")}])
+  [{:bubu (templates/text-message "Thank you for your attachment :)")}])
 
 (defn help []
   [{:message (templates/quick-replies-message "What do you need help with?"
