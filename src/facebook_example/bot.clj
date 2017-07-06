@@ -3,6 +3,8 @@
   (:require [clojure.string :as string]
             [clojure.core.match :refer [match]]
             [environ.core :refer [env]]
+            [clojure.spec.alpha :as s]
+            [clojure.future :refer :all]
             [fb-messenger.send :as facebook]
             [facebook-example.reaction :as reaction]))
 
@@ -69,6 +71,22 @@
     (reaction/thank-for-attachment)))
 
 ; You should not need to touch the following code :)
+
+; SCHEMA
+
+(s/def ::action #{"typing_on" "typing_off" "mark_seen"})
+(s/def ::duration int?)
+(s/def ::delay int?)
+(s/def ::message map?)
+
+(s/def ::message-reply (s/keys :req-un [::message]
+                               :opt-un [::delay]))
+
+(s/def ::action-reply (s/keys :req-un [::action]
+                              :opt-un [::duration]))
+
+(s/def ::reply (or ::message-reply ::action-reply))
+
 (defn process-event [event]
   ; The order of the matching clauses is important!
   (match [event]
@@ -95,6 +113,10 @@
   (let [sender-id (get-in messaging-event [:sender :id])
         replies (process-event messaging-event)]
     (doseq [reply replies]
+
+      (when-not (s/valid? ::reply reply)
+        (throw (ex-info (str "spec check failed: " (s/explain-str ::reply reply)) {})))
+      
       (match [reply]
 
         ; The bot wants to send a message (text, images, videos etc.) after n milliseconds
