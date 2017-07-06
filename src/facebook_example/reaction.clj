@@ -2,6 +2,19 @@
   (:gen-class)
   (:require [fb-messenger.templates :as templates]))
 
+; You can use two kind of replies, actions or messages.
+; Find the documentation for actions here: https://developers.facebook.com/docs/messenger-platform/send-api-reference/sender-actions
+; Messages are not only text messages https://developers.facebook.com/docs/messenger-platform/send-api-reference/text-message
+; but also more complex UI elements supported by the FB Messenger API, like for instance quick-replies https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies
+; or templates https://developers.facebook.com/docs/messenger-platform/send-api-reference/templates
+
+; Structure your actions this way:
+; {:action "typing_on" :duration 3000}
+; Structure your messages this way
+; {:message (templates/text-message "Hello") :delay 3000}
+; :duration and :delay are optional keys you can use to give a duration to an action
+; or decide after how many milliseconds you want your bot's message to be dispatched.
+
 (defn some-image []
   [{:message (templates/image-message "https://upload.wikimedia.org/wikipedia/commons/e/ef/Tunturisopuli_Lemmus_Lemmus.jpg")}])
 
