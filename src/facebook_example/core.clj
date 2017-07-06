@@ -8,7 +8,7 @@
             [fb-messenger.webhook :refer [handle-events]]
             [fb-messenger.auth]
             [fb-messenger.send]
-            [facebook-example.bot :as bot]
+            [facebook-example.bot-core :refer [handle-message]]
             ; Dependencies via Heroku Example
             [compojure.handler :refer [site]]
             [clojure.java.io :as io]
@@ -29,7 +29,7 @@
   (POST "/webhook" request
     (async/go
        (try
-         (handle-events bot/handle-message request)
+         (handle-events handle-message request)
          (catch Exception e (.printStackTrace e))))
     {:status 200})
   (GET "/webhook" request
