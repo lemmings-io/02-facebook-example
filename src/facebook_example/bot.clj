@@ -85,7 +85,8 @@
 (s/def ::action-reply (s/keys :req-un [::action]
                               :opt-un [::duration]))
 
-(s/def ::reply (or ::message-reply ::action-reply))
+(s/def ::reply (s/or :message-reply ::message-reply
+                     :action-reply ::action-reply))
 
 (defn process-event [event]
   ; The order of the matching clauses is important!
@@ -115,7 +116,8 @@
     (doseq [reply replies]
 
       (when-not (s/valid? ::reply reply)
-        (throw (ex-info (str "spec check failed: " (s/explain-str ::reply reply)) {})))
+        (throw (ex-info "The spec check has failed. Please make sure you are sending a correct reply pattern."
+                        {:causes (s/explain-str ::reply reply)})))
       
       (match [reply]
 
