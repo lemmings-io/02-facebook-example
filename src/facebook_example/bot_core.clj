@@ -10,7 +10,6 @@
                                                  on-message on-postback]]))
 
 ; SCHEMA FOR REPLIES
-
 (s/def ::action #{"typing_on" "typing_off" "mark_seen"})
 (s/def ::duration int?)
 (s/def ::delay int?)
@@ -26,7 +25,6 @@
                      :action-reply ::action-reply))
 
 ; MATCH USER INPUT
-
 (defn process-event [event]
   ; The order of the matching clauses is important!
   (match [event]
