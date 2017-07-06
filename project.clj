@@ -13,7 +13,7 @@
                  [ring/ring-json "0.4.0"]
                  [ring/ring-jetty-adapter "1.5.0"]
                  [environ "1.1.0"]
-                 [fb-messenger "0.3.0"]]
+                 [fb-messenger "0.4.0"]]
   :min-lein-version "2.0.0"
   :plugins [[lein-ring "0.9.7"]
             [lein-environ "1.1.0"]]
