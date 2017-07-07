@@ -11,16 +11,16 @@
 
 ; SCHEMA FOR REPLIES
 (s/def ::action #{"typing_on" "typing_off" "mark_seen"})
-(s/def ::timeout int?)
+(s/def ::delay int?)
 (s/def ::message map?)
 
 (s/def ::message-reply (s/keys :req-un [::message]))
 (s/def ::action-reply (s/keys :req-un [::action]))
-(s/def ::timeout-reply (s/keys :req-un [::timeout]))
+(s/def ::delay-reply (s/keys :req-un [::delay]))
 
 (s/def ::reply (s/or :message-reply ::message-reply
                      :action-reply ::action-reply
-                     :timeout-reply ::timeout-reply))
+                     :delay-reply ::delay-reply))
 
 ; MATCH USER INPUT
 (defn process-event [event]
@@ -68,8 +68,8 @@
         (facebook/send-sender-action sender-id action)
 
         ; The bot wants to wait n milliseconds
-        [{:timeout timeout}]
-        (Thread/sleep timeout)
+        [{:delay delay}]
+        (Thread/sleep delay)
 
         :else
         (throw (ex-info "You have provided an invalid pattern in your reply."

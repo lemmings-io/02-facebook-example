@@ -2,7 +2,7 @@
   (:gen-class)
   (:require [fb-messenger.templates :as templates]))
 
-; You can use three kind of replies: actions, messages and timeout.
+; You can use three kind of replies: actions, messages and delay.
 
 ; Find the documentation for actions here:
 ; https://developers.facebook.com/docs/messenger-platform/send-api-reference/sender-actions
@@ -17,11 +17,11 @@
 
 ; If you want your bot to keep typing for 3 seconds, write this:
 ; [{:action "typing_on"}
-;  {:timeout 3000}]
+;  {:delay 3000}]
 
 ; If you want your bot to see a message and reply after 2 seconds, write this:
 ; [{:action "mark_seen"}
-;  {:timeout 2000}
+;  {:delay 2000}
 ;  {:message (template/text-message "Alright!")}]
 
 (defn some-image []
@@ -32,7 +32,7 @@
 
 (defn welcome []
   [{:action "typing_on"}
-   {:timeout 3000}
+   {:delay 3000}
    {:message (templates/text-message "Welcome, fellow lemming =)")}
    {:message (templates/image-message "https://upload.wikimedia.org/wikipedia/commons/e/ef/Tunturisopuli_Lemmus_Lemmus.jpg")}])
 
@@ -40,11 +40,11 @@
   [{:message (templates/text-message "Sorry, I didn't get that! :(")}])
 
 (defn thank-for-attachment []
-  [{:timeout 3000}
+  [{:delay 3000}
    {:action "mark_seen"}
-   {:timeout 3000}
+   {:delay 3000}
    {:action "typing_on"}
-   {:timeout 3000}
+   {:delay 3000}
    {:message (templates/text-message "Thank you for your attachment :)")}])
 
 (defn help []
