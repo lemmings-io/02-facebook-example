@@ -9,11 +9,10 @@
 ; or templates https://developers.facebook.com/docs/messenger-platform/send-api-reference/templates
 
 ; Structure your actions this way:
-; {:action "typing_on" :duration 3000}
+; {:action "typing_on" :duration 3000 :delay 2000} --> this means the bot will wait 2 seconds to send a typing_on action that will last for 3 seconds.
 ; Structure your messages this way
-; {:message (templates/text-message "Hello") :delay 3000}
-; :duration and :delay are optional keys you can use to give a duration to an action
-; or decide after how many milliseconds you want your bot's message to be dispatched.
+; {:message (templates/text-message "Hello") :delay 3000} --> this means the bot will wait 3 seconds before sending the text message.
+; :duration and :delay are always optional keys
 
 (defn some-image []
   [{:message (templates/image-message "https://upload.wikimedia.org/wikipedia/commons/e/ef/Tunturisopuli_Lemmus_Lemmus.jpg")}])
@@ -30,7 +29,9 @@
   [{:message (templates/text-message "Sorry, I didn't get that! :(")}])
 
 (defn thank-for-attachment []
-  [{:message (templates/text-message "Thank you for your attachment :)")}])
+  [{:action "mark_seen" :delay 3000}
+   {:action "typing_on" :delay 3000 :duration 5000}
+   {:message (templates/text-message "Thank you for your attachment :)")}])
 
 (defn help []
   [{:message (templates/quick-replies-message "What do you need help with?"

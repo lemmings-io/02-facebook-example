@@ -19,7 +19,7 @@
                                :opt-un [::delay]))
 
 (s/def ::action-reply (s/keys :req-un [::action]
-                              :opt-un [::duration]))
+                              :opt-un [::duration ::delay]))
 
 (s/def ::reply (s/or :message-reply ::message-reply
                      :action-reply ::action-reply))
@@ -71,6 +71,19 @@
         [{:message message}]
         (facebook/send-message sender-id message)
         
+        ; The bot wants to perform an action for n milliseconds after n milliseconds
+        [{:action action :duration duration :delay delay}]
+        (do
+          (Thread/sleep delay)
+          (facebook/send-sender-action sender-id action)
+          (Thread/sleep duration))
+
+        ; The bot wants to perform an action after n milliseconds
+        [{:action action :delay delay}]
+        (do
+          (Thread/sleep delay)
+          (facebook/send-sender-action sender-id action))
+
         ; The bot wants to perform an action for n milliseconds (typing_on in most cases)
         [{:action action :duration timeout}]
         (do
