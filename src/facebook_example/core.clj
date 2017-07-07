@@ -34,8 +34,8 @@
 (spec/def ::delay-reply (spec/keys :req-un [::delay]))
 
 (spec/def ::reply (spec/or :message-reply ::message-reply
-                     :action-reply ::action-reply
-                     :delay-reply ::delay-reply))
+                           :action-reply ::action-reply
+                           :delay-reply ::delay-reply))
 
 ; MATCH USER INPUT
 (defn process-event [event]
