@@ -67,7 +67,7 @@
         [{:action action}]
         (facebook/send-sender-action sender-id action)
 
-        ; The not wants to wait n milliseconds
+        ; The bot wants to wait n milliseconds
         [{:timeout timeout}]
         (Thread/sleep timeout)
 
