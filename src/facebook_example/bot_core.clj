@@ -11,18 +11,16 @@
 
 ; SCHEMA FOR REPLIES
 (s/def ::action #{"typing_on" "typing_off" "mark_seen"})
-(s/def ::duration int?)
-(s/def ::delay int?)
+(s/def ::timeout int?)
 (s/def ::message map?)
 
-(s/def ::message-reply (s/keys :req-un [::message]
-                               :opt-un [::delay]))
-
-(s/def ::action-reply (s/keys :req-un [::action]
-                              :opt-un [::duration ::delay]))
+(s/def ::message-reply (s/keys :req-un [::message]))
+(s/def ::action-reply (s/keys :req-un [::action]))
+(s/def ::timeout-reply (s/keys :req-un [::timeout]))
 
 (s/def ::reply (s/or :message-reply ::message-reply
-                     :action-reply ::action-reply))
+                     :action-reply ::action-reply
+                     :timeout-reply ::timeout-reply))
 
 ; MATCH USER INPUT
 (defn process-event [event]
@@ -61,38 +59,17 @@
       ; The order of the matching clauses is important!
       (match [reply]
 
-        ; The bot wants to send a message (text, images, videos etc.) after n milliseconds
-        [{:message message :delay timeout}] 
-        (do
-          (Thread/sleep timeout)
-          (facebook/send-message sender-id message))
-
         ; The bot wants to send a message (text, images, videos etc.)
         [{:message message}]
         (facebook/send-message sender-id message)
-        
-        ; The bot wants to perform an action for n milliseconds after n milliseconds
-        [{:action action :duration duration :delay delay}]
-        (do
-          (Thread/sleep delay)
-          (facebook/send-sender-action sender-id action)
-          (Thread/sleep duration))
-
-        ; The bot wants to perform an action after n milliseconds
-        [{:action action :delay delay}]
-        (do
-          (Thread/sleep delay)
-          (facebook/send-sender-action sender-id action))
-
-        ; The bot wants to perform an action for n milliseconds (typing_on in most cases)
-        [{:action action :duration timeout}]
-        (do
-          (facebook/send-sender-action sender-id action)
-          (Thread/sleep timeout))
 
         ; The bot wants to perform an action (mark_seen, typing_on, typing_off)
         [{:action action}]
         (facebook/send-sender-action sender-id action)
+
+        ; The not wants to wait n milliseconds
+        [{:timeout timeout}]
+        (Thread/sleep timeout)
 
         :else
         (throw (ex-info "You have provided an invalid pattern in your reply."
