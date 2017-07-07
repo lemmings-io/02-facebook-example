@@ -3,12 +3,19 @@
   (:require [fb-messenger.templates :as templates]))
 
 ; You can use three kind of replies: actions, messages and timeout.
-; Find the documentation for actions here: https://developers.facebook.com/docs/messenger-platform/send-api-reference/sender-actions
-; Messages are not only text messages https://developers.facebook.com/docs/messenger-platform/send-api-reference/text-message
-; but also more complex UI elements supported by the FB Messenger API, like for instance quick-replies https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies
+
+; Find the documentation for actions here:
+; https://developers.facebook.com/docs/messenger-platform/send-api-reference/sender-actions
+
+; Messages are not only text messages
+; https://developers.facebook.com/docs/messenger-platform/send-api-reference/text-message
+; but also more complex UI elements supported by the FB Messenger API, like quick-replies
+; https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies
 ; or templates https://developers.facebook.com/docs/messenger-platform/send-api-reference/templates
 
-; For instance, if you want your bot to keep typing for 3 seconds, write this:
+; EXAMPLES
+
+; If you want your bot to keep typing for 3 seconds, write this:
 ; [{:action "typing_on"}
 ;  {:timeout 3000}]
 
