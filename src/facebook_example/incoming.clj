@@ -1,6 +1,6 @@
-(ns facebook-example.bot-custom
+(ns facebook-example.incoming
   (:gen-class)
-  (:require [facebook-example.reaction :as reaction]))
+  (:require [facebook-example.outgoing :as outgoing]))
 
 ; Uncomment if you want to set a persistent menu in your bot:
 ; (facebook/set-messenger-profile
@@ -20,11 +20,11 @@
         message-text (get-in event [:message :text])]
 
     (cond
-      (re-matches #"(?i)hi|hello|hallo" message-text) (reaction/welcome)
-      (re-matches #"(?i)help" message-text) (reaction/help)
-      (re-matches #"(?i)image" message-text) (reaction/some-image)
+      (re-matches #"(?i)hi|hello|hallo" message-text) (outgoing/welcome)
+      (re-matches #"(?i)help" message-text) (outgoing/help)
+      (re-matches #"(?i)image" message-text) (outgoing/some-image)
       ; If no rules apply echo the user's message-text input
-      :else (reaction/echo message-text))))
+      :else (outgoing/echo message-text))))
 
 (defn on-quick-reply [event]
   ; Called by handle-message when the user has tapped a quick reply
@@ -35,9 +35,9 @@
         quick-reply (get-in event [:message :quick_reply])
         quick-reply-payload (:payload quick-reply)]
     (cond
-      (= quick-reply-payload "CLOJURE") (reaction/send-clojure-docs)
-      (= quick-reply-payload "HEROKU") (reaction/send-heroku-instructions)
-      :else (reaction/error))))
+      (= quick-reply-payload "CLOJURE") (outgoing/send-clojure-docs)
+      (= quick-reply-payload "HEROKU") (outgoing/send-heroku-instructions)
+      :else (outgoing/error))))
 
 (defn on-postback [event]
   ; Called by handle-message when the user has tapped a postback button
@@ -50,9 +50,9 @@
         postback (get-in event [:postback :payload])
         referral (get-in event [:postback :referral :ref])]
     (cond
-      (= postback "get-started") (reaction/welcome)
-      (= postback "get-help") (reaction/help)
-      :else (reaction/error))))
+      (= postback "get-started") (outgoing/welcome)
+      (= postback "get-help") (outgoing/help)
+      :else (outgoing/error))))
 
 (defn on-attachments [event]
   ; Called by handle-message when the user has sent a file or sticker
@@ -62,4 +62,4 @@
         recipient-id (get-in event [:recipient :id])
         time-of-message (get-in event [:timestamp])
         attachments (get-in event [:message :attachments])]
-    (reaction/thank-for-attachment)))
+    (outgoing/thank-for-attachment)))

@@ -1,4 +1,4 @@
-(ns facebook-example.reaction
+(ns facebook-example.outgoing
   (:gen-class)
   (:require [fb-messenger.templates :as templates]))
 
