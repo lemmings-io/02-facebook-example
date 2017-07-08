@@ -9,6 +9,9 @@
 ;                          :call_to_actions [{:title "Help"
 ;                                             :type "postback"
 ;                                             :payload "GET_HELP"}]}]})
+;                                             {:title "Show me some bots"}]))
+;                                             :type "postback"
+;                                             :payload "GET_LEMMINGS_BOTS"}
 
 (defn on-message [event]
   ; Called by handle-message when the user has sent a text message
@@ -23,6 +26,7 @@
       (re-matches #"(?i)hi|hello|hallo" message-text) (outgoing/welcome)
       (re-matches #"(?i)help" message-text) (outgoing/help)
       (re-matches #"(?i)image" message-text) (outgoing/some-image)
+      (re-matches #"(?i)bots" message-text) (outgoing/send-lemmings-bots)
       ; If no rules apply echo the user's message-text input
       :else (outgoing/echo message-text))))
 
@@ -50,8 +54,9 @@
         postback (get-in event [:postback :payload])
         referral (get-in event [:postback :referral :ref])]
     (cond
-      (= postback "get-started") (outgoing/welcome)
-      (= postback "get-help") (outgoing/help)
+      (= postback "GET_STARTED") (outgoing/welcome)
+      (= postback "GET_HELP") (outgoing/help)
+      (= postback "GET_LEMMINGS_BOTS") (outgoing/send-lemmings-bots)
       :else (outgoing/error))))
 
 (defn on-attachments [event]
