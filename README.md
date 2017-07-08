@@ -92,7 +92,6 @@ Check out the code to find out more. Also try sending "image", "help" or thumbs 
 	```
 	heroku config:set PAGE_ACCESS_TOKEN=your_page_access_token
 	heroku config:set VERIFY_TOKEN=your_verify_token
-	heroku config:set LEIN_BUILD_TASK='ring uberjar'
 	```
 
 5. You can deploy to heroku with the following command:
@@ -113,11 +112,11 @@ Check out the code to find out more. Also try sending "image", "help" or thumbs 
 
 	![Heroku Webhook Success](resources/doc/images/heroku-webhook-success.png)
 	
-10. Go to your Facebook Page and send a message and your bot should echo your input again. Kudos! 🙂💧
+10. Go to your Facebook Page and send a message and your bot should respond to you. Kudos! 🙂💧
 
 	![Echo Bot](resources/doc/images/echo-bot.png)
 
 ### Links
-
+* [How to start up your development environment](https://github.com/lemmings-io/02-facebook-example/wiki/How-to-start-up-your-development-environment)
 * [Getting started with GitHub and Git Version Control](https://guides.github.com/activities/hello-world/)
 * [JSON Database Example](https://gist.github.com/sido378/0676b4ae6e264a73cc18737aa9496c69)
