@@ -31,7 +31,7 @@ A Facebook Messenger Bot Example in Clojure
 
 5. Start the local server
 
-		lein ring server-headless
+		lein ring server
 
 	![Lein Server](resources/doc/images/lein-ring-server.png)
 	

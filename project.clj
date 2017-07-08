@@ -19,7 +19,8 @@
   :plugins [[lein-ring "0.9.7"]
             [lein-environ "1.1.0"]]
   ;:hooks [environ.leiningen.hooks]
-  :ring {:handler facebook-example.core/app}
+  :ring {:handler facebook-example.core/app
+         :open-browser? false}
   :aot [facebook-example.core]
   :uberjar-name "facebook-example-standalone.jar")
   ; :profiles {:default [:base :dev :user]
