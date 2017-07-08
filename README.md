@@ -117,8 +117,6 @@ Check out the code to find out more. Also try sending "image", "help" or thumbs 
 
 	![Echo Bot](resources/doc/images/echo-bot.png)
 
-Note: This clojure app is ready for deployment on Heroku and based on [Heroku's Clojure Getting Started Example](https://github.com/heroku/clojure-getting-started).
-
 ### Links
 
 * [Getting started with GitHub and Git Version Control](https://guides.github.com/activities/hello-world/)
