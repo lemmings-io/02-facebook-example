@@ -30,10 +30,10 @@
 (defn echo [message-text]
   [{:message (templates/text-message message-text)}])
 
-(defn welcome []
+(defn welcome [first-name]
   [{:action "typing_on"}
    {:delay 3000}
-   {:message (templates/text-message "Welcome, fellow lemming =)")}
+   {:message (templates/text-message (str "Welcome " first-name " =)"))}
    {:message (templates/image-message "https://upload.wikimedia.org/wikipedia/commons/e/ef/Tunturisopuli_Lemmus_Lemmus.jpg")}
    {:delay 1000}
    {:message (templates/button-template "Want to see the work of previous lemmings survivors?"

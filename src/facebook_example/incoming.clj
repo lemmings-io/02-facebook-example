@@ -1,6 +1,15 @@
 (ns facebook-example.incoming
   (:gen-class)
-  (:require [facebook-example.outgoing :as outgoing]))
+  (:require [clojure.string :as string]
+            [fb-messenger.send :as facebook]
+            [facebook-example.outgoing :as outgoing]))
+
+
+; As you can see below, Clojure already provides string/includes? to check if one string is included in another string
+; (string/includes? "Hello Lemming" "Hello") => true
+; We define our own function using string/includes? to check if message-text includes any one of a list of strings
+(defn includes-any? [message-text list-of-strings]
+  (some #(string/includes? message-text %) list-of-strings))
 
 ; Uncomment if you want to set a persistent menu in your bot:
 ; (facebook/set-messenger-profile
@@ -20,13 +29,14 @@
   (let [sender-id (get-in event [:sender :id])
         recipient-id (get-in event [:recipient :id])
         time-of-message (get-in event [:timestamp])
-        message-text (get-in event [:message :text])]
-
+        message-text (get-in event [:message :text])
+        lower-case-message-text (string/lower-case message-text)
+        user-data (facebook/get-user-profile sender-id)]
     (cond
-      (re-matches #"(?i)hi|hello|hallo" message-text) (outgoing/welcome)
-      (re-matches #"(?i)help" message-text) (outgoing/help)
-      (re-matches #"(?i)image" message-text) (outgoing/some-image)
-      (re-matches #"(?i)bots" message-text) (outgoing/send-lemmings-bots)
+      (includes-any? lower-case-message-text ["hi" "hello" "hallo" "hey" "hy"]) (outgoing/welcome (get-in user-data [:first_name]))
+      (string/includes? lower-case-message-text "help") (outgoing/help)
+      (string/includes? lower-case-message-text "image") (outgoing/some-image)
+      (string/includes? lower-case-message-text "bots") (outgoing/send-lemmings-bots)
       ; If no rules apply echo the user's message-text input
       :else (outgoing/echo message-text))))
 
@@ -37,7 +47,8 @@
   (println event)
   (let [sender-id (get-in event [:sender :id])
         quick-reply (get-in event [:message :quick_reply])
-        quick-reply-payload (:payload quick-reply)]
+        quick-reply-payload (get-in quick-reply [:payload])
+        user-data (facebook/get-user-profile sender-id)]
     (cond
       (= quick-reply-payload "CLOJURE") (outgoing/send-clojure-docs)
       (= quick-reply-payload "HEROKU") (outgoing/send-heroku-instructions)
@@ -52,7 +63,8 @@
         recipient-id (get-in event [:recipient :id])
         time-of-message (get-in event [:timestamp])
         postback (get-in event [:postback :payload])
-        referral (get-in event [:postback :referral :ref])]
+        referral (get-in event [:postback :referral :ref])
+        user-data (facebook/get-user-profile sender-id)]
     (cond
       (= postback "GET_STARTED") (outgoing/welcome)
       (= postback "GET_HELP") (outgoing/help)
@@ -66,5 +78,6 @@
   (let [sender-id (get-in event [:sender :id])
         recipient-id (get-in event [:recipient :id])
         time-of-message (get-in event [:timestamp])
-        attachments (get-in event [:message :attachments])]
+        attachments (get-in event [:message :attachments])
+        user-data (facebook/get-user-profile sender-id)]
     (outgoing/thank-for-attachment)))
