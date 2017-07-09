@@ -4,17 +4,58 @@ A Facebook Messenger Bot Example in Clojure
 
 ### Facebook and app setup
 
-1. Setup a Facebook Page, Facebook app, create a Page Access Token and link the app to the page by following this [step-by-step guide](https://github.com/prometheus-ai/fb-messenger-clj/wiki/Facebook-Setup).
 
-2. Download the repository: [lemmings-io/02-facebook-example](https://github.com/lemmings-io/02-facebook-example/archive/master.zip)
+1. Make sure you have followed the [Lemmings Clojure and Atom Editor setup](https://lemmings.io/clojure-and-atom-editor-setup-40f8f09237b4).
 
-3. Extract it into the `/lemmings/clojure/projects` directory.
+2. Start a new vagrant session by opening a new [terminal](http://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line) window (on Windows you can use [Git BASH](https://git-for-windows.github.io/)), navigate to the 'clojure-master' directory you downloaded [before](https://github.com/lemmings-io/clojure) which contains the `Vagrantfile` and run `vagrant ssh`.
+
+3. In the VM, change into the projects directory
+
+   ```shell
+   cd projects/
+   ```
+
+4. "Clone" the Twitter example into your Vagrant environment
+
+    ```shell
+    git clone https://github.com/lemmings-io/02-facebook-example.git
+    ```
+
+    Now change into the Facebook example directory:
+
+    ```shell
+    cd 02-facebook-example
+    ```
+
+5. Start the nREPL server
+
+    Start another VM session by opening a new terminal window (Cmd-T) and run `vagrant ssh`.
+
+    Navigate to the project folder you just created with `cd projects/02-facebook-example`.
+
+    Start the nREPL server with `lein repl :headless :host 0.0.0.0 :port 7888` as described in the [Clojure and Atom Editor Setup](https://lemmings.io/clojure-and-atom-editor-setup-40f8f09237b4)
+
+6. Open your project in Atom.
+
+   Start Atom and open the folder `clojure-master/projects/02-facebook-example`
+   as an Atom project.
+
+   There's two things to know about Atom:
+
+   1. Ctrl-P on Windows and Cmd-P on macOS opens a file search. You can use
+   this to jump to any file in your project quickly.
+
+   2. Ctrl-Shift-P on Windows and Cmd-Shift-P on macOS opens the
+   Atom Command Palette. You use it to start the nREPL or enable Autoeval.
+
+7. Setup a Facebook Page, Facebook app, create a Page Access Token and link the app to the page by following this [step-by-step guide](https://github.com/prometheus-ai/fb-messenger-clj/wiki/Facebook-Setup).
+
 
 4. Provide your Facebook Page Access Token, Verify Token and Page Secret for local development by creating a file called `profiles.clj` in your working directory `<your-project-name>/profiles.clj`
 
 		{:dev {:env {:page-access-token "REPLACE"
 		   		   	 :verify-token "REPLACE"}}}
-		   		   	 
+
 ### Starting the development environment
 
 1. Start a new VM shell session via `vagrant ssh` in your terminal.
@@ -34,7 +75,7 @@ A Facebook Messenger Bot Example in Clojure
 		lein ring server
 
 	![Lein Server](resources/doc/images/lein-ring-server.png)
-	
+
 	Via the [lein-ring doc](https://github.com/weavejester/lein-ring): by default, this command attempts to find a free port, starting at 3000.
 
 ### Check if the app is running
