@@ -15,12 +15,14 @@
                  [ring/ring-jetty-adapter "1.5.0"]
                  [environ "1.1.0"]
                  [fb-messenger "0.4.0"]]
+  :target-path #=(eval (if (= "vagrant" (System/getenv "USER")) "/tmp/target/%s" "target"))
   :min-lein-version "2.0.0"
   :plugins [[lein-ring "0.9.7"]
             [lein-environ "1.1.0"]]
   ;:hooks [environ.leiningen.hooks]
   :ring {:handler facebook-example.core/app
-         :open-browser? false}
+         :open-browser? false
+         :auto-refresh? false}
   :aot [facebook-example.core]
   :uberjar-name "facebook-example-standalone.jar")
   ; :profiles {:default [:base :dev :user]
