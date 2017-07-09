@@ -15,7 +15,7 @@ A Facebook Messenger Bot Example in Clojure
    cd projects/
    ```
 
-4. "Clone" the Twitter example into your Vagrant environment
+4. "Clone" the Facebook example into your Vagrant environment
 
     ```shell
     git clone https://github.com/lemmings-io/02-facebook-example.git
