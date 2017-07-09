@@ -110,6 +110,12 @@ Check out the code to find out more. Also try sending "image", "help" or thumbs 
 
 1. If you haven't yet, create an account at [Heroku](https://signup.heroku.com/dc).
 
+2. In the VM shell (ssh) session make sure you are in the right directory
+
+  ```shell
+  cd projects/02-facebook-example
+  ```
+
 2. In the VM shell session login to your Heroku account via `heroku login`.
 
 	```
