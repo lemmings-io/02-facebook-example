@@ -19,10 +19,12 @@
             [clojure.future :refer :all]
             [fb-messenger.send :as facebook]
             [facebook-example.incoming :refer [on-quick-reply on-attachments
-                                               on-message on-postback]]))
+                                               on-message on-postback
+                                               init]]))
 
 (fb-messenger.send/set-page-access-token! (env :page-access-token))
 (fb-messenger.auth/set-token! (env :verify-token))
+(init)
 
 ; SCHEMA FOR REPLIES
 (spec/def ::action #{"typing_on" "typing_off" "mark_seen"})

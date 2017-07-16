@@ -11,16 +11,17 @@
 (defn includes-any? [message-text list-of-strings]
   (some #(string/includes? message-text %) list-of-strings))
 
-; Uncomment if you want to set a persistent menu in your bot:
-; (facebook/set-messenger-profile
-;      {:get_started {:payload "GET_STARTED"}
-;       :persistent_menu [{:locale "default"
-;                          :call_to_actions [{:title "Help"
-;                                             :type "postback"
-;                                             :payload "GET_HELP"}]}]})
-;                                             {:title "Show me some bots"}]))
-;                                             :type "postback"
-;                                             :payload "GET_LEMMINGS_BOTS"}
+(defn init [])
+  ; Uncomment if you want to set a persistent menu in your bot:
+  ; (facebook/set-messenger-profile
+  ;      {:get_started {:payload "GET_STARTED"}
+  ;       :persistent_menu [{:locale "default"
+  ;                          :call_to_actions [{:title "Help"
+  ;                                             :type "postback"
+  ;                                             :payload "GET_HELP"}
+  ;                                            {:title "Show me some bots"
+  ;                                             :type "postback"
+  ;                                             :payload "GET_LEMMINGS_BOTS"}]}]}))
 
 (defn on-message [event]
   ; Called by handle-message when the user has sent a text message
